@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head.ejs")%>
+    <title>Manage Members</title>
+  </head>
+  <body>
+    <%- include("partials/header.ejs")%>
+    <main class="page">
+      <section class="item-list">
+        <section class="page-header">
+          <h1 class="page-title"><%= !select ? "All Members" : "Select A Member"%></h1>
+          <form method="GET" action="/users" class="search-form">
+            <% if(selectedUser){%>
+            <input
+              type="hidden"
+              value="<%=selectedUser.id%>"
+              name="userId"
+              id="userId"
+            />
+            <%}%>
+            <% if (select) {%>
+            <input type="hidden" name="select" value="<%=select%>" />
+            <%}%>
+            <input
+              type="text"
+              placeholder="Search"
+              name="search"
+              id="search"
+              class="search search-bar"
+            />
+
+            <input type="submit" value="Search" class="search search-button button-hover" />
+          </form>
+        </section>
+        <% if(!select) {%>
+        <a href="/users">
+          <section class="list-item">
+           <p class="item-content create-button button-hover">Create New</p> 
+          </section>
+        </a>
+    <%}%>
+        <% for (user of users){ %>
+        <a href="/users/<%=user.id%> <%=select ? "?select=select" : ""%>">
+          <section class="list-item <%=user.id === selectedUser.id ? 'bg' : ''%>">
+            <p class="item-content item-title">
+              <%=user.firstName%> <%=user.lastName%>
+            </p>
+             <p class="item-content item-subtitle">
+             <%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %>
+            </p>
+          </section></a
+        >
+        <% } %>
+      </section>
+      <section class="item-info">
+        <% if(select){%>
+          <section class="info-card">
+            <h1 class="item-info-title">Member Information:</h1>
+            <p class="input-section info-input animate-flashWhite">First Name: <%=selectedUser.firstName%></p>
+            <p class="input-section info-input animate-flashWhite">Last Name: <%=selectedUser.lastName%></p>
+              <p class="input-section info-input animate-flashWhite">Email: <%=selectedUser.email%></p>
+          </section>
+          <section class="card-buttons">
+            <% if(selectedUser.id) {%>
+          <a href="/session?userId=<%=selectedUser.id%>" class="info-button button-hover">Book Session For <%=selectedUser.firstName%></a>
+          <%}%>
+          </section>
+        <%} else {%>
+        <section class="info-card">
+        <h1 class="item-info-title">Member Information:</h1>
+        <form
+          method="post"
+          action="<%= selectedUser.id !== null ? '/users/update' : '/users/create' %>"
+        >
+        <section class="mobile-input-half">
+          <input type="hidden" name="id" value="<%=selectedUser.id%>" />
+          <section class="input-section">
+          <label for="firstName">First Name: </label>
+          <input
+          class="info-input animate-flashWhite"
+            type="text"
+            name="firstName"
+            id="firstName"
+            placeholder="John"
+            value="<%=selectedUser.firstName%>"
+            required
+          />
+          </section>
+          <section class="input-section">
+          <label for="lastName">Last Name: </label>
+          <input
+          class="info-input animate-flashWhite"
+            type="text"
+            name="lastName"
+            id="lastName"
+            placeholder="Doe"
+            value="<%=selectedUser.lastName%>"
+            required
+          />
+          </section>
+          <section class="input-section">
+          <label for="username">Email: </label>
+          <input
+          class="info-input animate-flashWhite"
+            type="email"
+            name="username"
+            id="username"
+            placeholder="jdoe@gmail.com"
+            value="<%=selectedUser.email%>"
+            required
+          />
+          </section>
+          </section>
+          <section class="mobile-input-half">
+          <section class="input-section">
+          <label for="password">New Password: </label>
+          <input
+          class="info-input animate-flashWhite"
+            type="text"
+            name="password"
+            id="password"
+            placeholder="Password"
+          />
+          </section>
+          <section class="input-section">
+          <label for="role">Role: </label>
+          <select required name="role" class="info-input  animate-flashWhite" id="role">
+            <option selected disabled hidden value="">Select Role</option>
+            <option <%="member" === selectedUser.role ? "selected" : ""%>>Member</option>
+            <option <%="trainer" === selectedUser.role ? "selected" : ""%>>Trainer</option>
+            <option <%="admin" === selectedUser.role ? "selected" : ""%>>Admin</option>
+          </select>
+          </section>
+          </section>
+          </section>
+          <section class="card-buttons">
+          <input
+          class="info-button button-hover"
+            type="submit"
+            name="action"
+            value="<%= selectedUser.id !== null ? 'Save Changes' : 'Create User' %>"
+          />
+          <input type="submit" name="action" class="info-button button-hover" value="Delete User"/>
+          </section>
+        </form>
+        <%}%>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head.ejs")%>
+    <title>Manage <%= item.charAt(0).toUpperCase() + item.slice(1) %></title>
+  </head>
+  <body>
+    <%- include("partials/header.ejs")%>
+    <% console.log(selectedItem) %>
+    <main class="page">
+      <section class="item-list">
+        <section class="page-header">
+          <h1 class="page-title">All <%= item.charAt(0).toUpperCase() + item.slice(1) %></h1>
+          <form method="GET" action="/sessionItems/<%=item%>" class="search-form">
+            <% if(selectedItem.id){%>
+            <input
+              type="hidden"
+              value="<%=selectedItem.id%>"
+              name="itemId"
+              id="itemId"
+            />
+            <%}%>
+            <input
+              type="text"
+              placeholder="Search"
+              name="search"
+              id="search"
+              class="search search-bar"
+            />
+
+            <input type="submit" value="Search" class="search search-button button-hover" />
+          </form>
+       
+        </section>
+        <a href="/sessionItems/<%=item%>">
+        <section class="list-item">
+          <p  class="item-content create-button button-hover">New <%= item === "locations" ? "Location" : "Activity"%></p>
+          </section>
+          </a>
+        <% for (i of allItems){ %>
+        <a href="/sessionItems/<%=item%>/<%=i.id%>">
+          <section class="list-item <%=i.id === selectedItem.id ? 'bg' : ''%>">
+            <p class="item-content item-title">
+              <%=i.name%>
+            </p>
+          </section></a
+        >
+        <% } %>
+      </section>
+      <section class="item-info">
+        <section class="info-card">
+        <h1 class="item-info-title"><%= item === "locations" ? "Location" : "Activity"%> Information:</h1>
+        <form
+          method="post"
+          action="<%= selectedItem.id !== null ? '/sessionItems/update/' + item : '/sessionItems/create/' + item %>"
+        >
+          <input type="hidden" name="id" value="<%=selectedItem.id%>" />
+          <section class="input-section">
+          <label for="name"><%= item === "locations" ? "Location" : "Activity"%> Name: </label>
+          <input
+          class="info-input animate-flashWhite"
+            type="text"
+            name="name"
+            id="name"
+            value="<%=selectedItem.name%>"
+            placeholder="Name"
+            required
+          />
+          </section>
+          </section>
+          <section class="card-buttons">
+          <input
+          class="info-button"
+            type="submit"
+            name="action"
+            value="<%= selectedItem.id !== null ? 'Save Changes' : item === 'locations' ? 'Create Location' : 'Create Activity' %>"
+          />
+          <input type="submit" name="action" value="Delete" class="info-button button-hover"/>
+          </section>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

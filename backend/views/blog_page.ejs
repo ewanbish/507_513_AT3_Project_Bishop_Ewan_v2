@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head.ejs") %>
+    <title>Blog</title>
+  </head>
+  <body>
+    <%- include("partials/header.ejs") %>
+    <section class="page-header blog-page-header bg-none">
+      <h1 class="blog-title">Blog:</h1>
+     
+    </section>
+    <main class="page">
+      <section class="card-section">
+        <section class="blog-card">
+          <h4 class="blog-card-title"><b>Create New:</b></h4>
+           <form action="/blog/post" method="post">
+        <input
+          type="text"
+          name="title"
+          id="title"
+          placeholder="Title"
+          class="create-blog create-blog-title"
+          maxlength="45"
+          required
+        />
+        <textarea
+          name="content"
+          id="content"
+          placeholder="Share your thoughts!"
+          class="create-blog create-blog-content"
+          rows="2"
+          required
+        ></textarea>
+        <input type="submit" class="blog-card-delete card-button button-hover" value="Post">
+    </form>
+        </section>
+        <% for (post of postData){ %>
+        <section class="blog-card">
+          <h4 class="blog-card-title"><%= post.postTitle %></h4>
+          <h6 class="blog-subtitle">By <%= post.firstName%> <%=post.lastName%></h6>
+          <p class="blog-content"><%= post.postContent %></p>
+          <% if (post.userId == loginId | role == "admin" ) { %>
+          <a href="/blog/delete/<%=post.id%>" class="blog-card-delete card-button button-hover"
+            >Delete</i
+          ></a>
+          <%} %>
+        </section>
+        <%}%>
+      </section>
+    </main>
+  </body>
+</html>

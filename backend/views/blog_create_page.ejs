@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head.ejs") %>
+    <title>Create</title>
+  </head>
+  <body class="page">
+    <%- include("partials/header.ejs") %>
+    <form action="/blog/post" method="post">
+      <section class="blog-create-card">
+        <input
+          type="text"
+          name="title"
+          id="title"
+          placeholder="Title"
+          class="create-blog create-blog-title"
+          maxlength="45"
+          required
+        />
+
+        <textarea
+          name="content"
+          id="content"
+          placeholder="Share your thoughts!"
+          class="create-blog create-blog-content"
+          rows="5"
+          required
+        ></textarea>
+      </section>
+      <section class="create-blog-button-section">
+        <input
+          type="submit"
+          value="Post"
+          class="create-blog-button button-hover"
+        />
+        <a href="/blog" class="create-blog-button button-hover">Cancel</a>
+      </section>
+    </form>
+  </body>
+</html>

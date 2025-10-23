@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head.ejs")%>
+    <title>Manage Bookings</title>
+  </head>
+  <body>
+    <%- include("partials/header.ejs")%>
+    <main class="page">
+      <section class="item-list">
+        <section class="page-header">
+          <h1 class="page-title">All Bookings</h1>
+          <% if (role === "admin" || role === "trainer") { %>
+          <form method="GET" action="/bookings" class="search-form">
+            <input
+              type="hidden"
+              value="<%=selectedBooking.id%>"
+              name="bookingId"
+              id="bookingId"
+            />
+            <% if (userId) {%>
+            <input type="hidden" name="userId" value="<%=userId%>" />
+            <%}%>
+            <input
+              type="text"
+              placeholder="Search"
+              name="search"
+              id="search"
+              class="search search-bar"
+            />
+
+            <input type="submit" value="Search" class="search search-button button-hover" />
+          </form>
+          <%}%>
+        </section>
+
+        <a href="<%= role === 'admin' || role === "trainer" ? "/users/?select=select" : "/calendar"%>">
+          <section class="list-item">
+            <p class="item-content create-button button-hover">Create New Booking</p>
+          </section></a
+        >
+        <% for (booking of filteredBookings){ %>
+        <a
+          href="/bookings/<%=booking.id%><%= search !== null ? '?search=' + search  : '?search='%><%= userId !== null ? '&userId=' + userId  : ''%>"
+        >
+          <section class="list-item <%=booking.id === selectedBooking.id ? 'bg' : ''%>">
+            <p class="item-content item-title">
+              <%=booking.user.firstName%> <%=booking.user.lastName%>
+            </p>
+            <p class="item-content item-subtitle">
+              <%=booking.session.activity.activity_name %>
+            </p>
+            <p class="item-content item-subtitle"><%=booking.session.date%></p>
+          </section></a
+        >
+        <% } %>
+      </section>
+      <section class="item-info">
+        <section class="info-card">
+          <h1 class="item-info-title">Booking Information:</h1>
+          <% if (selectedBooking.id !== null) { %>
+          <section>
+            <p class="input-section info-input animate-flashWhite">
+             <b> Name:</b> <%=selectedBooking.user.firstName%>
+              <%=selectedBooking.user.lastName%>
+            </p>
+            <% if (role === "admin" | role === "trainer") { %>
+            <p class="input-section info-input animate-flashWhite"><b>Email: </b> <%=selectedBooking.user.email%></p>
+
+            <!-- <a
+              href="/users/<%=selectedBooking.userId%>"
+              class="input-section card-button button-hover"
+              >Go To Member</a
+            > -->
+            <%}%>
+          </section>
+          <section>
+            <p class="input-section info-input animate-flashWhite">
+              <b>Activity:</b> <%=selectedBooking.session.activity.activity_name%>
+            </p>
+            <p class="input-section info-input animate-flashWhite">
+             <b> Trainer:</b> <%=selectedBooking.session.trainer.firstName%>
+            </p>
+            <p class="input-section info-input animate-flashWhite"><b>Date:</b> <%=selectedBooking.session.date%></p>
+            <p class="input-section info-input animate-flashWhite">
+              <b>Time:</b> <%=selectedBooking.session.startTime%> -
+              <%=selectedBooking.session.endTime%>
+            </p>
+            <% if (role === "admin" | role === "trainer") { %>
+            <!-- <a
+              href="/session/<%=selectedBooking.sessionId%>"
+              class="input-section card-button button-hover"
+              >Go To Session</a
+            > -->
+            <% }%> <% if (role === "member") { %>
+            <p class="input-section info- input animate-flashWhite">
+            <b>  Location:</b> <%=selectedBooking.session.location.location_name%>
+            </p>
+            <%}%>
+          </section>
+        </section>
+        <section class="card-buttons">
+        <% if (role === "admin" | role === "trainer") { %>
+        <a href="/session?userId=<%=selectedBooking.userId%>&bookingId=<%=selectedBooking.id%>" class="info-button button-hover">
+          Update Booking
+        </a>
+        <%}%>
+        <a
+          href="/bookings/delete/<%=selectedBooking.id%><%= userId !== null ? '?userId=' + userId  : ''%>"
+          class="info-button button-hover"
+          >Delete Booking</a
+        >
+        <%}%>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

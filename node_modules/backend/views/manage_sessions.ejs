@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head.ejs")%>
+    <title>Manage Members</title>
+  </head>
+
+  <body>
+    <%- include("partials/header.ejs")%>
+    <% console.log(bookingId) %>
+    <main class="page">
+      <section class="item-list">
+        <section class="page-header">
+          <h1 class="page-title"><%= userId !== null ? "Select A Session" : "All Sessions:" %></h1>
+          <form method="GET" action="/session" class="search-form">
+            <input
+              type="hidden"
+              value="<%=selectedSession.id%>"
+              name="sessionId"
+              id="sessionId"
+            />
+             <% if (userId) {%>
+            <input type="hidden" name="userId" value="<%=userId%>" />
+             <input type="hidden" name="bookingId" value="<%=bookingId%>" />
+            <%}%>
+            <input
+              type="text"
+              placeholder="Search"
+              name="search"
+              id="search"
+              class="search search-bar"
+            />
+            <input type="submit" value="Search" class="search search-button button-hover" />
+          </form>
+          <!-- <a href="/session" class="page-header-button">New Session</a> -->
+           <% if(!userId) {%>
+           <%}%>
+        </section>
+        <% if (!userId) {%>
+          <a href="/session">
+          <section class="list-item">
+           <p class="item-content create-button button-hover">Create New</p> 
+          </section>
+        </a>
+        <%}%>
+        <% for (session of fullSessions){ %>
+        <a href="/session/<%=session.id%><%= search !== null ? '?search=' + search  : '?search='%><%= userId !== null ? '&userId=' + userId  : ''%><%= bookingId ? '&bookingId=' + bookingId : ''%>">
+          <section class="list-item <%=session.id === selectedSession.id ? 'bg' : ''%>">
+            <p class="item-content item-title"><%=session.activity.activity_name%></p>
+            <p class="item-content item-subtitle"><%=session.date%></p>
+            <p class="item-content item-subtitle"><%=session.trainer.firstName%></p>
+          </section>
+        </a>
+        <% } %>
+      </section>
+      <section class="item-info">
+        <section class="info-card">
+        <h2 class="item-info-title">Session Information:</h2>
+          <% if (!userId) {%>
+      
+        <form
+          method="post"
+          action="<%= selectedSession.id !== null ? '/session/update' : '/session/create' %>"
+        >
+        <section class="mobile-input-half">
+          <input type="hidden" name="id" value="<%=selectedSession.id%>" />
+          <section class="input-section">
+            <label for="activity">Activity: </label>
+            <select required name="activity" class="animate-flashWhite info-input">
+              <option value="" disabled selected hidden>Select Activity</option>
+              <% for (activity of allActivities) { %>
+                <option value="<%=activity.id%>" <%=activity.id === selectedSession.activity.id ? "selected" : ""%>><%=activity.activity_name%></option>
+                <% } %>
+            </select>
+          </section>
+          <section class="input-section">
+            <label for="trainer">Trainer: </label>
+            <select required name="trainer" class="animate-flashWhite info-input">
+                <option value="" disabled selected hidden>Select Trainer</option>
+              <% for(trainer of allTrainers) { %>
+                <option value="<%=trainer.id%>" <%=trainer.id === selectedSession.trainer.id || trainer.id === loginId ? "selected" : ""%>><%=trainer.firstName%></option>
+              <% } %>
+            </select>
+          </section>
+          <section class="input-section">
+            <label for="location">Location: </label>
+            <select required name="location" class="animate-flashWhite info-input">
+              <option value="" disabled selected hidden>Select Location</option>
+              <% for (location of allLocations) { %>
+                <option value="<%=location.id%>" <%=location.id === selectedSession.location.id ? "selected" : ""%>><%=location.location_name%></option>
+                <% } %>
+            </select>
+          </section>
+        </section>
+        <section class="mobile-input-half">
+          <section class="input-section">
+            <label for="date">Date:</label>
+            <input
+            class="info-input animate-flashWhite"
+              type="date"
+              name="date"
+              id="date"
+              value="<%=selectedSession.date%>"
+              required
+            />
+          </section>
+          <section class="input-section">
+            <label for="startTime">Time: </label>
+            <p class="inline-block">
+            <input
+            class="info-input animate-flashWhite time-input"
+              type="text"
+              name="startTime"
+              id="startTime"
+              value="<%=selectedSession.startTime%>"
+              placeholder="00:00 AM"
+              required
+            />
+            -
+            <input
+            class="info-input animate-flashWhite time-input"
+            type="text"
+            name="endTime"
+            id="endTime"
+            value="<%=selectedSession.endTime%>"
+             placeholder="00:00 AM"
+             required
+            />
+            </p>
+          </section>
+        </section>
+      </section>
+      <section class="card-buttons">
+          <input
+            type="submit"
+            name="action"
+            value="<%= selectedSession.id !== null ? 'Save Changes' : 'Create Session' %>"
+          class="info-button button-hover"
+            />
+          <input type="submit" name="action" value="Delete Session" class="info-button button-hover"/>
+        </section>
+        </form>
+        <%} else {%>
+            <p class="input-section info-input animate-flashWhite">Activity: <%=selectedSession.activity.activity_name%></p>
+
+            <p class="input-section info-input animate-flashWhite">trainer: <%=selectedSession.trainer.firstName%></p>
+  
+       
+            <p class="input-section info-input animate-flashWhite">Location: <%=selectedSession.location.location_name%></p>
+  
+       
+            <p class="input-section info-input animate-flashWhite">Date: <%=selectedSession.date%></p>
+
+          
+            <p class="input-section info-input animate-flashWhite">Start Time: <%=selectedSession.startTime%></p>
+        
+            <p class="input-section info-input animate-flashWhite">End Time: <%=selectedSession.endTime%></p>
+
+
+          
+          <%}%>
+      </section>
+      <section class="card-buttons">
+      <%if(userId && selectedSession.id) {%>
+      <a href="<%= bookingId ? "/bookings/update/" + bookingId + "/" + selectedSession.id : "/calendar/book/" + selectedSession.id + "?admin=admin&userId=" + userId%>" class="info-button button-hover"><%=bookingId ? "Update Booking" : "Book Session"%> For <%=userName%></a>
+      <%}%>
+      </section>
+    </main>
+  </body>
+</html>

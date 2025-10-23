@@ -1,0 +1,84 @@
+<header>
+  <img class="header-logo" src="/img/logo.png" alt="logo" />
+  <section class="header-nav">
+    <ul class="header-list">
+       <% const ConPage = (typeof page !== "undefined" ? page : null); %>
+      <% if(role == "admin" || role == "trainer") {%>
+      <li>
+        <a href="/blog" class="header-button <%=ConPage === "blog" ? "selected-header-button" : ""%>">Blog</a
+        ><a href="/blog" class="header-button <%=ConPage === "blog" ? "selected-header-button" : ""%>" title="Blog"
+          ><i class="fa-solid fa-comment"></i
+        ></a>
+      </li>
+      <% if(role == "admin") {%>
+      <li>
+        <a href="/users" class="header-button <%=ConPage === "user" ? "selected-header-button" : ""%>"
+          >Users</a
+        ><a href="/users" class="header-button <%=ConPage === "user" ? "selected-header-button" : ""%>" title="Manage Users"
+          ><i class="fa-solid fa-users"></i
+        ></a>
+      </li>
+      <%}%>
+      <li>
+        <a href="/session" class="header-button <%=ConPage === "session" ? "selected-header-button" : ""%>">Sessions</a
+        ><a href="/session" class="header-button <%=ConPage === "session" ? "selected-header-button" : ""%>" title="Manage Sessions"
+          ><i class="fa-solid fa-table"></i
+        ></a>
+      </li>
+      <li>
+        <a href="/bookings" class="header-button <%=ConPage === "booking" ? "selected-header-button" : ""%>">Bookings</a
+        ><a href="/bookings" class="header-button <%=ConPage === "booking" ? "selected-header-button" : ""%>" title="Manage Bookings"
+          ><i class="fa-solid fa-bookmark"></i></a>
+      </li>
+         <% if(role == "admin") {%>
+      <li>
+        <a href="/sessionItems/locations" class="header-button <%=ConPage === "location" ? "selected-header-button" : ""%>">Locations</a
+        ><a href="/sessionItems/locations" class="header-button <%=ConPage === "location" ? "selected-header-button" : ""%>" title="Manage Locations"
+          ><i class="fa-solid fa-location-dot"></i></a>
+      </li>
+      <li>
+        <a href="/sessionItems/activities" class="header-button <%=ConPage === "activity" ? "selected-header-button" : ""%>">Activities</a
+        ><a href="/sessionItems/activities" class="header-button <%=ConPage === "activity" ? "selected-header-button" : ""%>" title="Manage Activities"
+          ><i class="fa-solid fa-dumbbell"></i></a>
+      </li>
+      <%}%>
+      <%} else {%>
+       <li>
+        <a href="/blog" class="header-button <%=ConPage === "blog" ? "selected-header-button" : ""%>">Blog</a
+        ><a href="/blog" class="header-button <%=ConPage === "blog" ? "selected-header-button" : ""%>" title="Blog"
+          ><i class="fa-solid fa-comment"></i
+        ></a>
+      </li>
+      <li>
+        <a
+          href="/bookings?userId=<%=typeof loginId !== 'undefined' ? loginId : 'noid'%>"
+          class="header-button <%=ConPage === "user" ? "selected-header-button" : ""%>"
+          >My Bookings</a
+        ><a
+          href="/bookings?userId=<%=typeof loginId !== 'undefined' ? loginId : 'noid'%>"
+          class="header-button <%=ConPage === "user" ? "selected-header-button" : ""%>"
+          title="My Bookings"
+          ><i class="fa-solid fa-bookmark"></i></a>
+      </li>
+      <li>
+        <a href="/calendar" class="header-button <%=ConPage === "cal" ? "selected-header-button" : ""%>">Calendar</a
+        ><a href="/calendar" class="header-button <%=ConPage === "cal" ? "selected-header-button" : ""%>" title="Calendar"
+          ><i class="fa-solid fa-calendar-days"></i
+        ></a>
+      </li>
+      <%}%>
+      <li class="">
+        <a
+            href="/auth/logout"
+            class="header-button"
+             ><%=role === "guest" || !role ? "Login" : "Log Out"%></a
+              > <a
+            href="/auth/logout"
+            class="header-button"
+             ><i class="fa-solid fa-arrow-right-from-bracket"></i></a
+              ></li>
+    </ul>
+   
+  </section>
+
+</header>

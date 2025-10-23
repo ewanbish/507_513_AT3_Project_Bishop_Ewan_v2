@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head.ejs")%>
+    <title>Login</title>
+  </head>
+  <body class="login-page">
+    <h1 class="title-center title-margin text-4xl">High Street Gym</h1>
+    <h2 class="title-center login-page-subtitle text-2xl">Login</h2>
+    <form action="/auth/<%= message === "Login" ? 'l' : 's' %>" method="post">
+      <!-- <label for="username" class="input-label">Username: </label> -->
+      <input
+        type="text"
+        id="username"
+        name="username"
+        placeholder="Email"
+        class="input-block input-field"
+        required
+      />
+      <!-- <label for="password" class="input-label">Password: </label> -->
+       <% if (message == "Sign Up") {%>
+          <input
+          class="input-block input-field"
+            type="text"
+            name="firstName"
+            id="firstName"
+            placeholder="First Name"
+            required
+          />
+          </section>
+          <input
+          class="input-block input-field"
+            type="text"
+            name="lastName"
+            id="lastName"
+            placeholder="Last Name"
+            required
+          />
+     <%  }%>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Password"
+        class="input-block input-field"
+        required
+      />
+      <input
+        type="submit"
+        value="<%=message%>"
+        class="input-block submit-button button-hover"
+      />
+      <a href="/auth/guest" class="guest-link">Continue as Guest</a>
+      <a href="/auth/<%= message === "Login" ? 'signup' : '' %>" class="guest-link"><%= message === "Login" ? 'Sign up' : 'Login' %></a>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,265 @@
+paths:
+  /api/booking:
+    get:
+      summary: "Get all bookings from database"
+      tags: [Bookings]
+      responses:
+        200:
+          $ref: "#/components/responses/Retrieved"
+        500:
+          $ref: "#/components/responses/Database_Error"
+    post:
+      summary: "Create a new booking"
+      tags: [Bookings]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Booking"
+      responses:
+        200:
+          $ref: "#/components/responses/Created"
+        500:
+          $ref: "#/components/responses/Database_Error"
+
+  /api/booking/{id}:
+    get:
+      summary: "Get a specific booking from the database"
+      tags: [Bookings]
+      responses:
+        200:
+          $ref: "#/components/responses/Retrieved"
+        404:
+          $ref: "#/components/responses/Not_Found"
+        500:
+          $ref: "#/components/responses/Database_Error"
+    delete:
+      summary: "Delete a specific booking from the database"
+      tags: [Bookings]
+      responses:
+        200:
+          $ref: "#/components/responses/Deleted"
+        404:
+          $ref: "#/components/responses/Not_Found"
+        500:
+          $ref: "#/components/responses/Database_Error"
+
+  /api/session:
+    get:
+      summary: "Get all sessions from the database"
+      tags: [Sessions]
+      responses:
+        200:
+          $ref: "components/responses/Retrieved"
+        500:
+          $ref: "#/components/responses/Database_Error"
+
+  /api/session/{id}:
+    get:
+      summary: "Get a specific session from the database"
+      tags: [Sessions]
+      responses:
+        200:
+          $ref: "#/components/responses/Retrieved"
+        404:
+          $ref: "#/components/responses/Not_Found"
+        500:
+          $ref: "#/components/responses/Database_Error"
+    delete:
+      summary: "Delete a specific Session from the database"
+      tags: [Sessions]
+      responses:
+        200:
+          $ref: "#/components/responses/Deleted"
+        404:
+          $ref: "#/components/responses/Not_Found"
+        500:
+          $ref: "#/components/responses/Database_Error"
+
+  /api/blog:
+    get:
+      summary: "Get all Blog Posts from database"
+      tags: [Blog]
+      responses:
+        200:
+          $ref: "#/components/responses/Retrieved"
+        500:
+          $ref: "#/components/responses/Database_Error"
+    post:
+      summary: "Create a new Blog Post"
+      tags: [Blog]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Blog"
+      responses:
+        200:
+          $ref: "#/components/responses/Created"
+        500:
+          $ref: "#/components/responses/Database_Error"
+  /api/blog/{id}:
+    delete:
+      summary: "Delete a specific Blog Post from the database"
+      tags: [Blog]
+      responses:
+        200:
+          $ref: "#/components/responses/Deleted"
+        500:
+          $ref: "#/components/responses/Database_Error"
+  /api/user:
+    post:
+      summary: "Create a new User in the database"
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        200:
+          $ref: "#/components/responses/Created"
+        500:
+          $ref: "#/components/responses/Database_Error"
+  /api/user/{id}:
+    get:
+      summary: "Get a User by id"
+      tags: [Users]
+      responses:
+        200:
+          $ref: "#/components/responses/Retrieved"
+        500:
+          $ref: "#/components/responses/Database_Error"
+
+components:
+  schemas:
+    Session:
+      type: object
+      required: [id, activity, trainer, location, date, startTime, endTime]
+      properties:
+        id:
+          type: integer
+          example: 1
+        activity:
+          type: string
+          example: "Boxing"
+        trainer:
+          type: string
+          example: "Tony Stark"
+        location:
+          type: string
+          example: "West End"
+        date:
+          type: string
+          format: date
+          example: "2025-08-10"
+        startTime:
+          type: string
+          format: time
+          example: "10:00:00"
+        endTime:
+          type: string
+          format: time
+          example: "12:00:00"
+    Booking:
+      type: object
+      required: [id, sessionId, userId]
+      properties:
+        id:
+          type: number
+          example: 1
+        sessionId:
+          type: number
+          example: 1
+        userId:
+          type: number
+          example: 1
+    User:
+      type: object
+      required: [id, firstName, lastName, email, password]
+      properties:
+        id:
+          type: number
+          example: 1
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Wick"
+        email:
+          type: string
+          example: "Jwick@gmail.com"
+        password:
+          type: string
+          example: "Password1*"
+    Blog:
+      type: object
+      required: [id, blogContent, blogTitle]
+      properties:
+        id:
+          type: number
+          example: 1
+        blogContent:
+          type: string
+          example: "This is my super interesting content"
+        blogTitle:
+          type: string
+          example: "A Title!"
+  responses:
+    Created:
+      description: "A new item was created"
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [id, message]
+            properties:
+              id:
+                type: number
+                example: 1
+              message:
+                type: string
+                example: "Item created"
+    Not_Found:
+      description: "The resource could not be found"
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+                example: "Not Found"
+    Database_Error:
+      description: "The server ran into an issue"
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+                example: "Database Error"
+    Retrieved:
+      description: "The resource has been retrieved from the database"
+      content:
+        application/json:
+          schema:
+            type: object
+    Deleted:
+      description: "The resource has been successfully deleted"
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+                example: "Resource Deleted"

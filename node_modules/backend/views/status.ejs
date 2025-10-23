@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head.ejs")%>
+    <title>Status</title>
+    <% console.log(role) %>
+  </head>
+  <body>
+    <%- include("partials/header.ejs")%>
+    <h1 class="title-center title-margin text-4xl">Uh Oh...</h1>
+    <p class="title-center login-page-subtitle text-6xl title-margin error-subtitle"><i class="fa-solid fa-triangle-exclamation"></i></p>
+    <p class="title-center login-page-subtitle text-2xl title-margin error-text"><%=message%></p>
+    <a href="<%= (role) ? "/blog" : "/auth"%>" class="info-button-w button-hover">Take Me Back</a>
+  </body>
+</html>

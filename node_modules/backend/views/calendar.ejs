@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head.ejs")%>
+    <title>Calendar</title>
+  </head>
+
+  <body class="page">
+    <%- include("partials/header.ejs") %>
+
+    <section class="calendar-view">
+      <section class="page-header">
+        <h1 class="page-title" id="calendar-title">Calendar</h1>
+        <% const monthNames = [ "January", "February", "March", "April", "May",
+        "June", "July", "August", "September", "October", "November", "December"
+        ]; const firstDay = new Date(year, month, 1); const lastDay = new
+        Date(year, month + 1, 0); const startDay = firstDay.getDay(); const
+        totalDays = lastDay.getDate(); %>
+        <h3 class="page-subtitle"><%= monthNames[month] %> <%= year %></h3>
+      </section>
+      <table class="calendar-table">
+        <thead class="calendar-titles">
+          <tr>
+            <th class="calendar-heading"><b>Sun</b></th>
+            <th class="calendar-heading"><b>Mon</b></th>
+            <th class="calendar-heading"><b>Tue</b></th>
+            <th class="calendar-heading"><b>Wed</b></th>
+            <th class="calendar-heading"><b>Thu</b></th>
+            <th class="calendar-heading"><b>Fri</b></th>
+            <th class="calendar-heading"><b>Sat</b></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% let day = 1; %> <% for (let row = 0; day <= totalDays; row++) { %>
+          <tr class="calendar-row">
+            <% for (let col = 0; col < 7; col++) { %> <% if (row === 0 && col <
+            startDay) { %>
+            <td class="calendar-item"></td>
+            <% } else if (day > totalDays) { %>
+            <td class="calendar-item"></td>
+            <% } else {console.log("this is the td " + year + month + day) %>
+            <td class="calendar-item">
+              <a
+                class="calendar-text calendar-hover <%=String(day) === String(selectedDay) ? 'bg' : ''%><% for(session of sessionDates) {console.log(session)%> <% if(session.year === year && session.month === (month + 1) && session.day === day){ %>underline-day<%}}%>"
+                href="/calendar/<%=year%>/<%=month%>/<%=day%>"
+                ><%= day %>
+              </a>
+            </td>
+            <% day++; %> <% } %> <% } %>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </section>
+    <section class="item-info">
+      <section class="day-list">
+        <% if (selectedDate){%>
+        <section class="calendar-day-heading">
+          <h2 class="calendar-day-title"><%= selectedDate%></h2>
+          <h4 class="calendar-day-subtitle">Available Sessions:</h4>
+        </section>
+        <% for (session of sessionsOfDate) { console.log(session)%>
+        <a
+          href="/calendar/<%=year%>/<%=month%>/<%=selectedDay%>/<%=session.id%>"
+          class="list-item <%= selectedSession && String(session.id) === String(selectedSession.id) ? 'bg' : ''%>"
+        >
+          <p class="item-content"><%= session.activity.activity_name%></p>
+          <p class="item-content item-subtitle mobile-content">
+            <%= session.startTime%> - <%=session.endTime%>
+          </p>
+        </a>
+        <% } %> <% } %>
+      </section>
+      <section class="day-session-info">
+        <% if (selectedSession) { console.log("here")
+        console.log(selectedSession)%>
+        <section class="info-card calendar-card">
+          <h5 class="item-info-title">Session Information:</h5>
+          <p class="input-section info-input">
+            <b>Trainer: </b><%=selectedSession.trainer.firstName%>
+          </p>
+          <p class="input-section info-input">
+            <b>Date:</b> <%=selectedSession.date%>
+          </p>
+          <p class="input-section info-input">
+            <b> Activity: </b><%=selectedSession.activity.activity_name%>
+          </p>
+          <p class="input-section info-input">
+            <b>Time:</b>
+            <%=selectedSession.startTime%> - <%=selectedSession.endTime%>
+          </p>
+          <p class="input-section info-input">
+            <b>Location:</b> <%=selectedSession.location.location_name%>
+          </p>
+        </section>
+        <section class="card-buttons">
+          <a
+            href="/calendar/book/<%=selectedSession.id%>"
+            class="info-button button-hover"
+            >Book Session</a
+          >
+          <% } %>
+        </section>
+      </section>
+    </section>
+  </body>
+</html>
