@@ -4,7 +4,16 @@ import bcrypt from "bcryptjs";
  * This class handles all User CRUD functions
  */
 export class UserModel extends DatabaseModel {
-  constructor(id, firstName, lastName, email, password, role, deleted) {
+  constructor(
+    id,
+    firstName,
+    lastName,
+    email,
+    password,
+    role,
+    deleted,
+    authenticationKey = null
+  ) {
     super();
     this.id = id;
     this.firstName = firstName;
@@ -13,6 +22,7 @@ export class UserModel extends DatabaseModel {
     this.password = password;
     this.role = role;
     this.deleted = deleted;
+    this.authenticationKey = authenticationKey;
   }
 
   /**
@@ -28,7 +38,8 @@ export class UserModel extends DatabaseModel {
       row["email"],
       row["password"],
       row["role"],
-      row["deleted"]
+      row["deleted"],
+      row["authentication_key"]
     );
   }
 
@@ -57,6 +68,19 @@ export class UserModel extends DatabaseModel {
       )
       .catch((error) => console.error(error));
   }
+
+  static getByAuthenticationKey(authenticationKey) {
+    return this.query(
+      "SELECT * FROM users WHERE authentication_key = ? and deleted = 0",
+      [authenticationKey]
+    )
+      .then((result) =>
+        result.length > 0
+          ? this.tableToModel(result[0].users)
+          : Promise.reject("not found")
+      )
+      .catch((error) => console.error(error));
+  }
   /**
    * Retrieves a single active user from the users table by email.
    * @param {string} email The email of the user to fetch.
@@ -82,7 +106,7 @@ export class UserModel extends DatabaseModel {
     return this.query(
       `
       UPDATE users
-      SET firstName = ?, lastName = ?, email = ?, password = ?, role = ?
+      SET firstName = ?, lastName = ?, email = ?, password = ?, role = ?, authentication_key = ?,
       WHERE userId = ?`,
       [
         user.firstName,
@@ -90,6 +114,7 @@ export class UserModel extends DatabaseModel {
         user.email,
         hashedPassword,
         user.role,
+        user.authenticationKey,
         user.id,
       ]
     ).catch((error) => {
@@ -107,7 +132,7 @@ export class UserModel extends DatabaseModel {
     const hashedPassword = await bcrypt.hash(user.password, 10);
 
     return this.query(
-      `INSERT INTO users (userID, firstName, lastName, email, password, role)
+      `INSERT INTO users (userID, firstName, lastName, email, password, role, authentication_key)
     VALUES (?, ?, ?, ?, ?, ?)`,
       [
         user.id,
@@ -116,6 +141,7 @@ export class UserModel extends DatabaseModel {
         user.email,
         hashedPassword,
         user.role,
+        user.authenticationKey,
       ]
     ).catch((error) => {
       console.error(error);

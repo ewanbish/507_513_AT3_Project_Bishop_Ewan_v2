@@ -1,13 +1,21 @@
 import express from "express";
 import { BlogModel } from "../../models/BlogModel.mjs";
-
+import { APIAuthenticationController } from "./APIAuthenticationController.mjs";
 export class APIBlogController {
   static routes = express.Router();
 
   static {
-    this.routes.post("/", this.createBlog);
+    this.routes.post(
+      "/",
+      APIAuthenticationController.restrict("any"),
+      this.createBlog
+    );
     this.routes.get("/", this.getBlogPosts);
-    this.routes.delete("/:id", this.deleteBlog);
+    this.routes.delete(
+      "/:id",
+      APIAuthenticationController.restrict("any"),
+      this.deleteBlog
+    );
   }
 
   static async createBlog(req, res) {

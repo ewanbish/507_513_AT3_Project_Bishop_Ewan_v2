@@ -6,6 +6,7 @@ import { APIUserController } from "./APIUserController.mjs";
 import { APIBlogController } from "./APIBlogController.mjs";
 import { APIBookingController } from "./APIBookingController.mjs";
 import { APISessionController } from "./APISessionController.mjs";
+import { APIAuthenticationController } from "./APIAuthenticationController.mjs";
 const options = {
   failOnErrors: true,
   definition: {
@@ -15,7 +16,15 @@ const options = {
       title: "ML Fitness API",
       description: "JSON REST API for interacting with ML Strength Backend",
     },
-    components: {},
+    components: {
+      securitySchemes: {
+        ApiKey: {
+          type: "apiKey",
+          in: "header",
+          name: "x-auth-key",
+        },
+      },
+    },
   },
   apis: ["./controllers/**/*.{js,mjs,yaml}", "./components.yaml"],
 };
@@ -55,5 +64,7 @@ export class APIController {
         .status(error.status || 500)
         .json({ message: error.message, errors: error.errors });
     });
+    this.routes.use(APIAuthenticationController.middleware);
+    this.routes.use(APIAuthenticationController.routes);
   }
 }
