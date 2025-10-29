@@ -3,14 +3,22 @@ paths:
     get:
       summary: "Get all bookings from database"
       tags: [Bookings]
+      security:
+        - ApiKeyAuth: []
       responses:
-        200:
+        "200":
           $ref: "#/components/responses/Retrieved"
-        500:
+        "500":
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
     post:
       summary: "Create a new booking"
       tags: [Bookings]
+      security:
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -22,11 +30,17 @@ paths:
           $ref: "#/components/responses/Created"
         500:
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /api/booking/{id}:
     get:
       summary: "Get a specific booking from the database"
       tags: [Bookings]
+      security:
+        - ApiKeyAuth: []
       responses:
         200:
           $ref: "#/components/responses/Retrieved"
@@ -34,6 +48,10 @@ paths:
           $ref: "#/components/responses/Not_Found"
         500:
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
     delete:
       summary: "Delete a specific booking from the database"
       tags: [Bookings]
@@ -44,21 +62,33 @@ paths:
           $ref: "#/components/responses/Not_Found"
         500:
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /api/session:
     get:
       summary: "Get all sessions from the database"
       tags: [Sessions]
+      security:
+        - ApiKeyAuth: []
       responses:
-        200:
-          $ref: "components/responses/Retrieved"
-        500:
+        "200":
+          $ref: "#components/responses/Retrieved"
+        "500":
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /api/session/{id}:
     get:
       summary: "Get a specific session from the database"
       tags: [Sessions]
+      security:
+        - ApiKeyAuth: []
       responses:
         200:
           $ref: "#/components/responses/Retrieved"
@@ -66,9 +96,15 @@ paths:
           $ref: "#/components/responses/Not_Found"
         500:
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
     delete:
       summary: "Delete a specific Session from the database"
       tags: [Sessions]
+      security:
+        - ApiKeyAuth: []
       responses:
         200:
           $ref: "#/components/responses/Deleted"
@@ -76,6 +112,10 @@ paths:
           $ref: "#/components/responses/Not_Found"
         500:
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /api/blog:
     get:
@@ -89,6 +129,8 @@ paths:
     post:
       summary: "Create a new Blog Post"
       tags: [Blog]
+      security:
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -100,19 +142,31 @@ paths:
           $ref: "#/components/responses/Created"
         500:
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   /api/blog/{id}:
     delete:
       summary: "Delete a specific Blog Post from the database"
       tags: [Blog]
+      security:
+        - ApiKeyAuth: []
       responses:
         200:
           $ref: "#/components/responses/Deleted"
         500:
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   /api/user:
     post:
       summary: "Create a new User in the database"
       tags: [Users]
+      security:
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -124,6 +178,10 @@ paths:
           $ref: "#/components/responses/Created"
         500:
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   /api/user/{id}:
     get:
       summary: "Get a User by id"
@@ -136,6 +194,8 @@ paths:
     put:
       summary: "Update an existing user"
       tags: [Users]
+      security:
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -144,14 +204,20 @@ paths:
               $ref: "#/components/schemas/User"
       responses:
         200:
-        $ref: "#/components/responses/Updated"
+          $ref: "#/components/responses/Updated"
         404:
           $ref: "#/components/responses/Not_Found"
         500:
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
     patch:
       summary: "Partially update an existing user"
       tags: [Users]
+      security:
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -160,11 +226,46 @@ paths:
               $ref: "#/components/schemas/User"
       responses:
         200:
-        $ref: "#/components/responses/Updated"
+          $ref: "#/components/responses/Updated"
         404:
           $ref: "#/components/responses/Not_Found"
         500:
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /api/authenticate:
+    post:
+      summary: "Send user credentials to server - to authenticate"
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCredentials"
+      responses:
+        "200":
+          $ref: "#/components/responses/Authenticated"
+        "500":
+          $ref: "#/components/responses/Database_Error"
+        "400":
+          $ref: "#/components/responses/Invalid_Credentials"
+    delete:
+      summary: "Log out a user - Deauthenticate"
+      tags: [Authentication]
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/Deleted"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "500":
+          $ref: "#/components/responses/Database_Error"
+
 components:
   schemas:
     Session:
@@ -210,7 +311,7 @@ components:
           example: 1
     User:
       type: object
-      required: [id, firstName, lastName, email, password]
+      required: [id, firstName, lastName, email, password, role]
       properties:
         id:
           type: number
@@ -227,6 +328,10 @@ components:
         password:
           type: string
           example: "Password1*"
+        role:
+          type: string
+          example: "trainer"
+          enum: [member, trainer, admin]
     Blog:
       type: object
       required: [id, blogContent, blogTitle]
@@ -240,6 +345,23 @@ components:
         blogTitle:
           type: string
           example: "A Title!"
+    UserCredentials:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          example: "Bat_man"
+        password:
+          type: string
+          example: "Abc123"
+    ApiKey:
+      type: object
+      required: [key]
+      properties:
+        key:
+          type: string
+          format: uuid
   responses:
     Created:
       description: "A new item was created"
@@ -305,3 +427,47 @@ components:
               message:
                 type: string
                 example: "Resource Updated"
+    Forbidden:
+      description: "User is not permitted to access this resource"
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+                example: "User role is not permitted to acess this resource"
+    Not_Authenticated:
+      description: "User is not authenticated to access this resource"
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+                example: "Login to access this resource"
+    Authenticated:
+      description: "User has been authenticated in the database"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiKey"
+    Invalid_Credentials:
+      description: "The user inputted Invalid Credentials"
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+                example: "Invalid Credentials"
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

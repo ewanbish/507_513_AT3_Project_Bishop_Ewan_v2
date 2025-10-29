@@ -1,14 +1,26 @@
 import express from "express";
 import { UserModel } from "../../models/UserModel.mjs";
-
+import { APIAuthenticationController } from "./APIAuthenticationController.mjs";
 export class APIUserController {
   static routes = express.Router();
 
   static {
     this.routes.post("/", this.createUser);
-    this.routes.get("/:id", this.getUserById);
-    this.routes.put("/:id", this.updateUser);
-    this.routes.patch("/:id", this.patchUser);
+    this.routes.get(
+      "/:id",
+      APIAuthenticationController.restrict("any"),
+      this.getUserById
+    );
+    this.routes.put(
+      "/:id",
+      APIAuthenticationController.restrict("any"),
+      this.updateUser
+    );
+    this.routes.patch(
+      "/:id",
+      APIAuthenticationController.restrict("any"),
+      this.patchUser
+    );
   }
 
   static async createUser(req, res) {

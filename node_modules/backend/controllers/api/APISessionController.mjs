@@ -1,13 +1,17 @@
 import express from "express";
 import { SessionModel } from "../../models/SessionModel.mjs";
-
+import { APIAuthenticationController } from "./APIAuthenticationController.mjs";
 export class APISessionController {
   static routes = express.Router();
 
   static {
     this.routes.get("/", this.getSessions);
     this.routes.get("/:id", this.getSessionById);
-    this.routes.delete("/:id", this.deleteSession);
+    this.routes.delete(
+      "/:id",
+      APIAuthenticationController.restrict("trainer"),
+      this.deleteSession
+    );
   }
 
   static async getSessions(req, res) {
@@ -36,11 +40,9 @@ export class APISessionController {
           message: "Session Deleted",
         });
       } else {
-        res
-          .status(404)
-          .json({
-            message: "Not Found - The selected session could not be found",
-          });
+        res.status(404).json({
+          message: "Not Found - The selected session could not be found",
+        });
       }
     } catch (error) {
       console.error(error);

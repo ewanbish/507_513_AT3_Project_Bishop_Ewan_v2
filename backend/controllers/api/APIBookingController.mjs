@@ -1,14 +1,26 @@
 import express from "express";
 import { BookingModel } from "../../models/BookingModel.mjs";
-
+import { APIAuthenticationController } from "./APIAuthenticationController.mjs";
 export class APIBookingController {
   static routes = express.Router();
 
   static {
     this.routes.get("/", this.getBookings);
-    this.routes.post("/", this.createBooking);
-    this.routes.get("/:id", this.getBookingById);
-    this.routes.delete("/:id", this.deleteBooking);
+    this.routes.post(
+      "/",
+      APIAuthenticationController.restrict("member"),
+      this.createBooking
+    );
+    this.routes.get(
+      "/:id",
+      APIAuthenticationController.restrict("member"),
+      this.getBookingById
+    );
+    this.routes.delete(
+      "/:id",
+      APIAuthenticationController.restrict("member"),
+      this.deleteBooking
+    );
   }
 
   /**
