@@ -9,7 +9,6 @@
   "license": "ISC",
   "description": "",
   "workspaces": [
-    "frontend",
     "backend"
   ],
   "dependencies": {
