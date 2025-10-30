@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import cors from "cors";
 import { BlogController } from "./controllers/BlogController.mjs";
 import { AuthenticationController } from "./controllers/Authentication.mjs";
 import { UserController } from "./controllers/UserController.mjs";
@@ -8,10 +9,11 @@ import { BookingController } from "./controllers/BookingController.mjs";
 import { CalendarController } from "./controllers/CalendarController.mjs";
 import { ItemsController } from "./controllers/A_LController.mjs";
 import { SessionModel } from "./models/SessionModel.mjs";
-import { APIController } from "./controllers/api/ApiController.mjs";
+import { APIController } from "./controllers/api/APIController.mjs";
 
 const app = express();
 const port = 8080;
+app.use(cors({ origin: true }));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(import.meta.dirname, "views"));

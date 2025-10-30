@@ -22,13 +22,17 @@ export class APIAuthenticationController {
    * @type {express.RequestHandler}
    */
   static async #APIAuthenticationProvider(req, res, next) {
+    console.log("I have been called");
+    console.log(req.headers["x-auth-key"]);
     const authenticationKey = req.headers["x-auth-key"];
     if (authenticationKey) {
+      console.log("successful");
       try {
         req.authenticatedUser = await UserModel.getByAuthenticationKey(
           authenticationKey
         );
       } catch (error) {
+        console.log("Not working");
         if (error == "not found") {
           res.status(404).json({ message: "Key not found" });
         } else {
@@ -46,50 +50,25 @@ export class APIAuthenticationController {
   /**
    *
    * @type {express.RequestHandler}
-   *
-   * /api/authenticate:
-   *    post:
-   *        summary: "Authenticate with username and password"
-   *        tags: [Authentication]
-   *        requestBody:
-   *            required: true
-   *            content:
-   *              application/json:
-   *                        schema:
-   *                            $ref: "#/components/schemas/UserCredentials"
-   *        responses:
-   *            200:
-   *                $ref: "#/components/responses/LoginSuccessful"
-   *            400:
-   *                $ref: "#/components/responses/Error"
-   *            500:
-   *                $ref: "#/components/responses/Error"
-   *    delete:
-   *        summary: "Deauthentication with API key header"
-   *        tags: [Authentication]
-   *        security:
-   *          - ApiKey: []
-   *        responses:
-   *            200:
-   *                $ref: "#/components/responses/Updated"
-   *            default:
-   *                $ref: "#/components/responses/Error"
    */
 
   static async handleAuthenticate(req, res) {
     if (req.method == "POST") {
       try {
-        const user = await UserModel.getByUsername(req.body.username);
+        const user = await UserModel.getByUsername(req.body.email);
         if (await bcrypt.compare(req.body.password, user.password)) {
           const authenticationKey = crypto.randomUUID();
 
           user.authenticationKey = authenticationKey;
           await UserModel.update(user);
+          res.status(200).json({
+            message: "Successfully authenticated",
+            key: user.authenticationKey,
+          });
         } else {
           res.status(400).json({ message: "Invalid credentials" });
         }
       } catch (error) {
-        console.error(error);
         switch (error) {
           case "not found":
             res.status(400).json({ message: "Invalid credentials" });

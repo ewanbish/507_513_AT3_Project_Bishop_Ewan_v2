@@ -41,7 +41,7 @@ export class APIBlogController {
   static async getBlogPosts(req, res) {
     try {
       const posts = await BlogModel.getAll();
-      res.status(200).json(posts);
+      res.status(200).json({ posts });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Database Error" });

@@ -18,7 +18,7 @@ const options = {
     },
     components: {
       securitySchemes: {
-        ApiKey: {
+        ApiKeyAuth: {
           type: "apiKey",
           in: "header",
           name: "x-auth-key",
@@ -45,13 +45,6 @@ export class APIController {
      *               description: "The documentation page"
      */
     this.routes.use("/docs", swaggerUI.serve, swaggerUI.setup(specification));
-
-    //API Controllers:
-    this.routes.use("/user", APIUserController.routes);
-    this.routes.use("/blog", APIBlogController.routes);
-    this.routes.use("/booking", APIBookingController.routes);
-    this.routes.use("/session", APISessionController.routes);
-
     this.routes.use(
       ApiValidator.middleware({
         apiSpec: specification,
@@ -66,5 +59,10 @@ export class APIController {
     });
     this.routes.use(APIAuthenticationController.middleware);
     this.routes.use(APIAuthenticationController.routes);
+
+    this.routes.use("/user", APIUserController.routes);
+    this.routes.use("/blog", APIBlogController.routes);
+    this.routes.use("/booking", APIBookingController.routes);
+    this.routes.use("/session", APISessionController.routes);
   }
 }
