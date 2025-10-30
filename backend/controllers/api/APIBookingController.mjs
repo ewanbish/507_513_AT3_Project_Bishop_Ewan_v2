@@ -5,7 +5,11 @@ export class APIBookingController {
   static routes = express.Router();
 
   static {
-    this.routes.get("/", this.getBookings);
+    this.routes.get(
+      "/",
+      APIAuthenticationController.restrict("member"),
+      this.getBookings
+    );
     this.routes.post(
       "/",
       APIAuthenticationController.restrict("member"),
@@ -33,7 +37,7 @@ export class APIBookingController {
   static async getBookings(req, res) {
     try {
       const allBookings = await BookingModel.getAll();
-      res.status(200).json(allBookings);
+      res.status(200).json({ allBookings });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Database Error" });

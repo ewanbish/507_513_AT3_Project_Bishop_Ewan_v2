@@ -17,7 +17,7 @@ export class APISessionController {
   static async getSessions(req, res) {
     try {
       const allSessions = await SessionModel.getAll();
-      res.status(200).json(allSessions);
+      res.status(200).json({ allSessions });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Database Error" });
