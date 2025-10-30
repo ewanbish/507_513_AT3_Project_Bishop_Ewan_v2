@@ -19,7 +19,7 @@ export function BlogButton({ className = "", setBlogPosts }) {
 
       const data = await response.json();
       setBlogPosts(data.fullPosts);
-      console.log("Fetched successfully:", data.fullPosts); // optional, just for dev
+      console.log("Fetched successfully:", data.fullPosts);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -68,7 +68,7 @@ export function BookingsButton({ className = "" }) {
       if (!response.ok) throw new Error(response.json);
 
       const result = await response.json();
-      console.log("Fetched successfully:", result); // optional, just for dev
+      console.log("Fetched successfully:", result);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -116,7 +116,7 @@ export function TimetableButton({ className = "" }) {
       if (!response.ok) throw new Error(response.json);
 
       const result = await response.json();
-      console.log("Fetched successfully:", result); // optional, just for dev
+      console.log("Fetched successfully:", result);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -163,7 +163,7 @@ export function UserButton({ className = "" }) {
       if (!response.ok) throw new Error(response.json);
 
       const result = await response.json();
-      console.log("Fetched successfully:", result); // optional, just for dev
+      console.log("Fetched successfully:", result);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }

@@ -3,12 +3,14 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import BlogPageView from "./common/BlogPageView";
+import LoginView from "./common/LoginView";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: BlogPageView,
+    Component: LoginView,
   },
+  { path: "/blog", Component: BlogPageView },
 ]);
 createRoot(document.getElementById("root")).render(
   <StrictMode>
