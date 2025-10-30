@@ -1,6 +1,7 @@
 import express from "express";
 import { BlogModel } from "../../models/BlogModel.mjs";
 import { APIAuthenticationController } from "./APIAuthenticationController.mjs";
+import { UserModel } from "../../models/UserModel.mjs";
 export class APIBlogController {
   static routes = express.Router();
 
@@ -41,7 +42,16 @@ export class APIBlogController {
   static async getBlogPosts(req, res) {
     try {
       const posts = await BlogModel.getAll();
-      res.status(200).json({ posts });
+      const fullPosts = await Promise.all(
+        posts.map(async (post) => {
+          const user = await UserModel.getById(post.userId);
+          return {
+            ...post,
+            user, // attach user object to post
+          };
+        })
+      );
+      res.status(200).json({ fullPosts });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Database Error" });

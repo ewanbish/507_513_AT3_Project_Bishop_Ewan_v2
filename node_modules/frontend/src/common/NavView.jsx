@@ -11,14 +11,15 @@ export function Dock({ children }) {
   );
 }
 
-export function BlogButton({ className = "" }) {
+export function BlogButton({ className = "", setBlogPosts }) {
   const handleFetch = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/blog");
       if (!response.ok) throw new Error(response.json);
 
-      const result = await response.json();
-      console.log("Fetched successfully:", result); // optional, just for dev
+      const data = await response.json();
+      setBlogPosts(data.fullPosts);
+      console.log("Fetched successfully:", data.fullPosts); // optional, just for dev
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
