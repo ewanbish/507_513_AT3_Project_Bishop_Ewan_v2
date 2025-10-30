@@ -26,9 +26,9 @@ paths:
             schema:
               $ref: "#/components/schemas/Booking"
       responses:
-        200:
+        "200":
           $ref: "#/components/responses/Created"
-        500:
+        "500":
           $ref: "#/components/responses/Database_Error"
         "401":
           $ref: "#/components/responses/Not_Authenticated"
@@ -42,11 +42,11 @@ paths:
       security:
         - ApiKeyAuth: []
       responses:
-        200:
+        "200":
           $ref: "#/components/responses/Retrieved"
-        404:
+        "404":
           $ref: "#/components/responses/Not_Found"
-        500:
+        "500":
           $ref: "#/components/responses/Database_Error"
         "401":
           $ref: "#/components/responses/Not_Authenticated"
@@ -56,11 +56,11 @@ paths:
       summary: "Delete a specific booking from the database"
       tags: [Bookings]
       responses:
-        200:
+        "200":
           $ref: "#/components/responses/Deleted"
-        404:
+        "404":
           $ref: "#/components/responses/Not_Found"
-        500:
+        "500":
           $ref: "#/components/responses/Database_Error"
         "401":
           $ref: "#/components/responses/Not_Authenticated"
@@ -75,7 +75,7 @@ paths:
         - ApiKeyAuth: []
       responses:
         "200":
-          $ref: "#components/responses/Retrieved"
+          $ref: "#/components/responses/Retrieved"
         "500":
           $ref: "#/components/responses/Database_Error"
         "401":
@@ -90,11 +90,11 @@ paths:
       security:
         - ApiKeyAuth: []
       responses:
-        200:
+        "200":
           $ref: "#/components/responses/Retrieved"
-        404:
+        "404":
           $ref: "#/components/responses/Not_Found"
-        500:
+        "500":
           $ref: "#/components/responses/Database_Error"
         "401":
           $ref: "#/components/responses/Not_Authenticated"
@@ -347,14 +347,14 @@ components:
           example: "A Title!"
     UserCredentials:
       type: object
-      required: [username, password]
+      required: [email, password]
       properties:
-        username:
+        email:
           type: string
-          example: "Bat_man"
+          example: "John@gmail.com"
         password:
           type: string
-          example: "Abc123"
+          example: "Password1*"
     ApiKey:
       type: object
       required: [key]
@@ -466,8 +466,3 @@ components:
               message:
                 type: string
                 example: "Invalid Credentials"
-  securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: x-api-key

@@ -73,13 +73,11 @@ export class UserModel extends DatabaseModel {
     return this.query(
       "SELECT * FROM users WHERE authentication_key = ? and deleted = 0",
       [authenticationKey]
-    )
-      .then((result) =>
-        result.length > 0
-          ? this.tableToModel(result[0].users)
-          : Promise.reject("not found")
-      )
-      .catch((error) => console.error(error));
+    ).then((result) =>
+      result.length > 0
+        ? this.tableToModel(result[0].users)
+        : Promise.reject("not found")
+    );
   }
   /**
    * Retrieves a single active user from the users table by email.
@@ -89,11 +87,11 @@ export class UserModel extends DatabaseModel {
   static getByUsername(email) {
     return this.query("SELECT * FROM users WHERE email = ? AND deleted = 0", [
       email,
-    ])
-      .then((result) =>
-        result.length > 0 ? this.tableToModel(result[0].users) : null
-      )
-      .catch((err) => console.error(err));
+    ]).then((result) =>
+      result.length > 0
+        ? this.tableToModel(result[0].users)
+        : Promise.reject("not found")
+    );
   }
   /**
    * Updates an existing user in the users table by its ID, hashing the password before saving.
@@ -102,17 +100,17 @@ export class UserModel extends DatabaseModel {
    * @throws {Error} If the database update fails.
    */
   static async update(user) {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
+    // const hashedPassword = await bcrypt.hash(user.password, 10);
     return this.query(
       `
       UPDATE users
-      SET firstName = ?, lastName = ?, email = ?, password = ?, role = ?, authentication_key = ?,
+      SET firstName = ?, lastName = ?, email = ?, password = ?, role = ?, authentication_key = ?
       WHERE userId = ?`,
       [
         user.firstName,
         user.lastName,
         user.email,
-        hashedPassword,
+        user.password,
         user.role,
         user.authenticationKey,
         user.id,
