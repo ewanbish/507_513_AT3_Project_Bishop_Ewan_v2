@@ -265,6 +265,19 @@ paths:
           $ref: "#/components/responses/Not_Authenticated"
         "500":
           $ref: "#/components/responses/Database_Error"
+  /api/authenticate/register:
+    post:
+      summary: "Register a new user"
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          $ref: "#/components/responses/Authenticated"
 
 components:
   schemas:
@@ -311,10 +324,11 @@ components:
           example: 1
     User:
       type: object
-      required: [id, firstName, lastName, email, password, role]
+      required: [firstName, lastName, email, password, role]
       properties:
         id:
           type: number
+          nullable: true
           example: 1
         firstName:
           type: string

@@ -57,8 +57,8 @@ export class APIController {
         .status(error.status || 500)
         .json({ message: error.message, errors: error.errors });
     });
-    this.routes.use(APIAuthenticationController.middleware);
-    this.routes.use(APIAuthenticationController.routes);
+    this.routes.use("/authenticate", APIAuthenticationController.middleware);
+    this.routes.use("/authenticate", APIAuthenticationController.routes);
 
     this.routes.use("/user", APIUserController.routes);
     this.routes.use("/blog", APIBlogController.routes);

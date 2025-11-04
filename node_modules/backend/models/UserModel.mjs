@@ -100,7 +100,7 @@ export class UserModel extends DatabaseModel {
    * @throws {Error} If the database update fails.
    */
   static async update(user) {
-    // const hashedPassword = await bcrypt.hash(user.password, 10);
+    const hashedPassword = await bcrypt.hash(user.password, 10);
     return this.query(
       `
       UPDATE users
@@ -110,7 +110,7 @@ export class UserModel extends DatabaseModel {
         user.firstName,
         user.lastName,
         user.email,
-        user.password,
+        hashedPassword,
         user.role,
         user.authenticationKey,
         user.id,
@@ -131,7 +131,7 @@ export class UserModel extends DatabaseModel {
 
     return this.query(
       `INSERT INTO users (userID, firstName, lastName, email, password, role, authentication_key)
-    VALUES (?, ?, ?, ?, ?, ?)`,
+    VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         user.id,
         user.firstName,

@@ -8,12 +8,9 @@ export class APIAuthenticationController {
 
   static {
     this.middleware.use(this.#APIAuthenticationProvider);
-    this.routes.post("/authenticate", this.handleAuthenticate);
-    this.routes.delete(
-      "/authenticate",
-      this.restrict("any"),
-      this.handleAuthenticate
-    );
+    this.routes.post("/register", this.handleRegister);
+    this.routes.post("/", this.handleAuthenticate);
+    this.routes.delete("/", this.restrict("any"), this.handleAuthenticate);
   }
 
   /**
@@ -22,8 +19,10 @@ export class APIAuthenticationController {
    * @type {express.RequestHandler}
    */
   static async #APIAuthenticationProvider(req, res, next) {
-    console.log("I have been called");
-    console.log(req.headers["x-auth-key"]);
+    console.log("The API Authentication has been called");
+    console.log(
+      "This is the auth key from the req header" + req.headers["x-auth-key"]
+    );
     const authenticationKey = req.headers["x-auth-key"];
     if (authenticationKey) {
       console.log("successful");
@@ -55,17 +54,23 @@ export class APIAuthenticationController {
   static async handleAuthenticate(req, res) {
     if (req.method == "POST") {
       try {
+        console.log("Authenticating...");
         const user = await UserModel.getByUsername(req.body.email);
+        console.log(user);
+        console.log(req.body.password);
         if (await bcrypt.compare(req.body.password, user.password)) {
+          console.log("sucess");
           const authenticationKey = crypto.randomUUID();
-
+          user.password = req.body.password;
           user.authenticationKey = authenticationKey;
+          console.log(user);
           await UserModel.update(user);
           res.status(200).json({
             message: "Successfully authenticated",
             key: user.authenticationKey,
           });
         } else {
+          console.log("fail");
           res.status(400).json({ message: "Invalid credentials" });
         }
       } catch (error) {
@@ -96,6 +101,39 @@ export class APIAuthenticationController {
     }
   }
 
+  static async handleRegister(req, res) {
+    console.log("Registering...");
+    try {
+      const user = new UserModel(
+        req.body.id,
+        req.body.firstName,
+        req.body.lastName,
+        req.body.email,
+        req.body.password,
+        req.body.role,
+        null
+      );
+      const result = await UserModel.create(user);
+      user.id = result.insertId;
+      const authenticationKey = crypto.randomUUID();
+      user.authenticationKey = authenticationKey;
+      await UserModel.update(user);
+      res.status(200).json({
+        message: "Successfully authenticated",
+        key: user.authenticationKey,
+      });
+    } catch (error) {
+      switch (error) {
+        case "not found":
+          res.status(400).json({ message: "Invalid credentials" });
+          break;
+        default:
+          console.error(error);
+          res.status(500).json({ message: "Failed to register user" });
+          break;
+      }
+    }
+  }
   /**
    *
    * Allows us to define restricted routes.
@@ -125,3 +163,12 @@ export class APIAuthenticationController {
     };
   }
 }
+// const user = new UserModel(
+//   5,
+//   "Ewan",
+//   "Bishop",
+//   "ewanb@gmail.com",
+//   "Password1*",
+//   "admin"
+// );
+// UserModel.update(user);
