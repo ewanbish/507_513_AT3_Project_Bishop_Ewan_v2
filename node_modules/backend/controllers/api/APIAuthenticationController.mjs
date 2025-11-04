@@ -8,9 +8,13 @@ export class APIAuthenticationController {
 
   static {
     this.middleware.use(this.#APIAuthenticationProvider);
-    this.routes.post("/register", this.handleRegister);
-    this.routes.post("/", this.handleAuthenticate);
-    this.routes.delete("/", this.restrict("any"), this.handleAuthenticate);
+    this.routes.post("/authenticate/register", this.handleRegister);
+    this.routes.post("/authenticate", this.handleAuthenticate);
+    this.routes.delete(
+      "/authenticate",
+      this.restrict("any"),
+      this.handleAuthenticate
+    );
   }
 
   /**

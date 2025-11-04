@@ -71,8 +71,6 @@ paths:
     get:
       summary: "Get all sessions from the database"
       tags: [Sessions]
-      security:
-        - ApiKeyAuth: []
       responses:
         "200":
           $ref: "#/components/responses/Retrieved"
@@ -121,6 +119,14 @@ paths:
     get:
       summary: "Get all Blog Posts from database"
       tags: [Blog]
+      parameters:
+        - name: filter
+          in: query
+          description: Search filter on Blog titles, content and authors.
+          required: false
+          schema:
+            type: string
+            example: "Push"
       responses:
         200:
           $ref: "#/components/responses/Retrieved"

@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import BlogPageView from "./assets/BlogPageView";
+import SessionPageView from "./assets/SessionPageView";
+import UserPage from "./assets/UserPageView";
 import LoginView from "./assets/LoginView";
 import Layout from "./common/Layout";
 const router = createBrowserRouter([
@@ -11,6 +13,9 @@ const router = createBrowserRouter([
     children: [
       { index: true, Component: LoginView },
       { path: "/blog", Component: BlogPageView },
+      { path: "/session", Component: SessionPageView },
+      { path: "/booking", Component: SessionPageView },
+      { path: "/user", Component: UserPage },
     ],
   },
 ]);

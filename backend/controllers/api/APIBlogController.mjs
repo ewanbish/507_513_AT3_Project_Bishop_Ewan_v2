@@ -51,7 +51,8 @@ export class APIBlogController {
           };
         })
       );
-      res.status(200).json({ fullPosts });
+      // TODO: ADD the filter functionality here
+      req.query.filter ? fullPosts.filter : res.status(200).json({ fullPosts });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Database Error" });

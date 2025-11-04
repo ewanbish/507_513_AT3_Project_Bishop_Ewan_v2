@@ -1,33 +1,46 @@
 // import { useState } from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { IoSearchSharp } from "react-icons/io5";
 import { SlSpeech } from "react-icons/sl";
-import { useNavigate } from "react-router";
 function BlogPage() {
-  const navigate = useNavigate;
-
   const [blogPosts, setBlogPosts] = useState([]);
   const [error, setError] = useState(null);
+  const [filter, setFilter] = useState("");
+
+  const getPosts = useCallback(
+    (filter = "") => {
+      const response =
+        filter.length > 0
+          ? fetch("http://localhost:8080/api/blog?filter=" + filter)
+          : fetch("http://localhost:8080/api/blog");
+
+      response
+        .then((response) => response.json())
+        .then((body) => {
+          console.log(body);
+          setBlogPosts(body.fullPosts);
+        })
+        .catch((error) => {
+          setError(String(error));
+        });
+    },
+    [setError, setBlogPosts]
+  );
+
   useEffect(() => {
-    fetch("http://localhost:8080/api/blog")
-      .then((response) => response.json())
-      .then((body) => {
-        console.log(body);
-        setBlogPosts(body.fullPosts);
-      })
-      .catch((error) => {
-        setError(String(error));
-      });
-  }, [setBlogPosts, setError]);
+    getPosts();
+  }, [getPosts]);
   return (
     <section className="flex flex-col items-center">
       <div className="join p-4 self-stretch">
         <input
+          onChange={(e) => setFilter(e.target.value)}
+          value={filter}
           type="text"
           className="input join-item grow"
           placeholder="search posts"
         />
-        <button className="btn join-item">
+        <button className="btn join-item" onClick={() => getPosts(filter)}>
           <IoSearchSharp />
         </button>
       </div>
