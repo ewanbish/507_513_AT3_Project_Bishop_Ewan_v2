@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sessions [
+    <!ELEMENT sessions (session*)>
+    <!ATTLIST sessions export-date CDATA "0000-00-00">
+    <!ELEMENT session (id, date,  activity, time, trainer)>
+    <!ELEMENT id (#PCDATA)>
+    <!ELEMENT date (#PCDATA)>
+    <!ELEMENT time (#PCDATA)>
+    <!ELEMENT activity (#PCDATA)>
+    <!ELEMENT location (#PCDATA)>
+    <!ELEMENT name (#PCDATA)>
+    <!ELEMENT email (#PCDATA)>
+    <!ELEMENT trainer (name, email)>
+]>
+
+<sessions export-date="0000-00-00">
+    <session>
+        <id></id>
+        <date></date>
+        <activity></activity>
+        <time></time>
+        <trainer>
+            <name></name>
+            <email></email>
+        </trainer>
+    </session>
+</sessions>

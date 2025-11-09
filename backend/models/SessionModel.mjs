@@ -196,4 +196,20 @@ export class SessionModel extends DatabaseModel {
         return Promise.reject("Error updating expired sessions");
       });
   }
+  /**
+   *
+   * @param {Date} start
+   * @param {Date} end
+   * @returns {Promise<Array<SaleProductModel>>}
+   */
+  static getByStartAndEndDate(start, end) {
+    return this.query(
+      `
+        SELECT * FROM sessions  
+        WHERE sessions.date BETWEEN ? AND ? 
+        AND deleted = 0
+        `,
+      [this.toMySqlDate(start), this.toMySqlDate(end)]
+    ).then((result) => result.map((row) => this.tableToModel(row)));
+  }
 }

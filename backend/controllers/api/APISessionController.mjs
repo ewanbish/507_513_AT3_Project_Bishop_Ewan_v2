@@ -5,7 +5,11 @@ export class APISessionController {
   static routes = express.Router();
 
   static {
-    this.routes.get("/", this.getSessions);
+    this.routes.get(
+      "/",
+      // APIAuthenticationController.restrict("member"),
+      this.getSessionsOfWeek
+    );
     this.routes.get("/:id", this.getSessionById);
     this.routes.delete(
       "/:id",
@@ -14,6 +18,20 @@ export class APISessionController {
     );
   }
 
+  static async getSessionsOfWeek(req, res) {
+    try {
+      const sessions = await SessionModel.getByStartAndEndDate(
+        new Date(req.query.start_date),
+        new Date(req.query.end_date)
+      );
+
+      res.status(200).json(sessions);
+    } catch (error) {
+      res.status(500).json({
+        message: "Database Error",
+      });
+    }
+  }
   static async getSessions(req, res) {
     try {
       const allSessions = await SessionModel.getAll();

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE bookings [
+    <!ELEMENT bookings (booking*)>
+    <!ATTLIST bookings export-date CDATA "0000-00-00">
+    <!ELEMENT booking (id, session, member)>
+    <!ELEMENT id (#PCDATA)>
+    <!ELEMENT date (#PCDATA)>
+    <!ELEMENT activity (#PCDATA)>
+    <!ELEMENT location (#PCDATA)>
+    <!ELEMENT name (#PCDATA)>
+    <!ELEMENT email (#PCDATA)>
+    <!ELEMENT session (activity, trainer, location, time, date )>
+    <!ELEMENT trainer (name, email)>
+]>

@@ -25,7 +25,7 @@ export class APIAuthenticationController {
   static async #APIAuthenticationProvider(req, res, next) {
     console.log("The API Authentication has been called");
     console.log(
-      "This is the auth key from the req header" + req.headers["x-auth-key"]
+      "This is the auth key from the req header " + req.headers["x-auth-key"]
     );
     const authenticationKey = req.headers["x-auth-key"];
     if (authenticationKey) {

@@ -7,6 +7,7 @@ import SessionPageView from "./assets/SessionPageView";
 import UserPage from "./assets/UserPageView";
 import LoginView from "./assets/LoginView";
 import Layout from "./common/Layout";
+import BookingsPage from "./assets/BookingPageView";
 const router = createBrowserRouter([
   {
     Component: Layout,
@@ -14,7 +15,7 @@ const router = createBrowserRouter([
       { index: true, Component: LoginView },
       { path: "/blog", Component: BlogPageView },
       { path: "/session", Component: SessionPageView },
-      { path: "/booking", Component: SessionPageView },
+      { path: "/booking", Component: BookingsPage },
       { path: "/user", Component: UserPage },
     ],
   },

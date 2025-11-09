@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { IoSearchSharp } from "react-icons/io5";
 import { SlSpeech } from "react-icons/sl";
+import { fetchAPI } from "../api.mjs";
 function BlogPage() {
   const [blogPosts, setBlogPosts] = useState([]);
   const [error, setError] = useState(null);
@@ -9,27 +10,38 @@ function BlogPage() {
 
   const getPosts = useCallback(
     (filter = "") => {
-      const response =
-        filter.length > 0
-          ? fetch("http://localhost:8080/api/blog?filter=" + filter)
-          : fetch("http://localhost:8080/api/blog");
+      setBlogPosts([]);
+      setError(null);
 
-      response
-        .then((response) => response.json())
-        .then((body) => {
-          console.log(body);
-          setBlogPosts(body.fullPosts);
+      const request =
+        filter.length > 0
+          ? fetchAPI("GET", "/blog?filter=" + filter)
+          : fetchAPI("GET", "/blog");
+
+      request
+        .then((response) => {
+          if (response.status == 200) {
+            if (response.body.fullPosts.length > 0) {
+              setError(null);
+              setBlogPosts(response.body.fullPosts);
+            } else {
+              setBlogPosts([]);
+              setError("No blog posts found...");
+            }
+          } else {
+            setError(response.body.message);
+          }
         })
         .catch((error) => {
-          setError(String(error));
+          setError(error);
         });
     },
-    [setError, setBlogPosts]
+    [setError, setBlogPosts, setFilter]
   );
 
   useEffect(() => {
-    getPosts();
-  }, [getPosts]);
+    getPosts(filter);
+  }, [getPosts, filter]);
   return (
     <section className="flex flex-col items-center">
       <div className="join p-4 self-stretch">
@@ -40,7 +52,10 @@ function BlogPage() {
           className="input join-item grow"
           placeholder="search posts"
         />
-        <button className="btn join-item" onClick={() => getPosts(filter)}>
+        <button
+          className="btn join-item btn-primary"
+          onClick={() => getPosts(filter)}
+        >
           <IoSearchSharp />
         </button>
       </div>
@@ -56,6 +71,7 @@ function BlogPage() {
           {blogPosts &&
             blogPosts.map((post) => (
               <BlogCard
+                key={post.postId}
                 postId={post.id}
                 userId={post.userId}
                 title={post.postTitle}
@@ -94,7 +110,7 @@ function BlogCard({ title, content, userId, subtitle, postId }) {
           <p>{content}</p>
           <div className="justify-end card-actions">
             {userId === 5 && (
-              <button className="btn btn-error" onClick={handleDelete}>
+              <button className="btn btn-primary" onClick={handleDelete}>
                 Delete
               </button>
             )}

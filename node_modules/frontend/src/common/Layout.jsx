@@ -13,12 +13,17 @@ function Layout() {
       ? "ML Strength"
       : location.pathname == "/session"
       ? "Sessions"
-      : "Bookings";
+      : location.pathname == "/booking"
+      ? "Bookings"
+      : "Manage User";
   return (
-    <main className="max-w-[430px] min-h-screen mx-auto shadow">
+    <main
+      data-theme="light"
+      className="max-w-[430px] min-h-screen mx-auto shadow"
+    >
       <header className="navbar bg-base-100 shadow-sm">
         <div className="flex-1">
-          <a className="btn btn-ghost text-xl">{page}</a>
+          <h1 className="font-bold text-xl">{page}</h1>
         </div>
         <div className="flex-none">
           <button

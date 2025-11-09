@@ -51,8 +51,19 @@ export class APIBlogController {
           };
         })
       );
-      // TODO: ADD the filter functionality here
-      req.query.filter ? fullPosts.filter : res.status(200).json({ fullPosts });
+      if (req.query.filter) {
+        const query = req.query.filter.toLowerCase();
+        const filtered = fullPosts.filter((post) => {
+          return (
+            post.postContent?.toLowerCase().includes(query) ||
+            post.postTitle?.toLowerCase().includes(query) ||
+            post.user?.firstName?.toLowerCase().includes(query) ||
+            post.user?.lastName?.toLowerCase().includes(query)
+          );
+        });
+        return res.status(200).json({ fullPosts: filtered });
+      }
+      res.status(200).json({ fullPosts });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Database Error" });

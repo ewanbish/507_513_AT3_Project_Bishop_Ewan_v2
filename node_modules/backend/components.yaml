@@ -3,11 +3,11 @@ paths:
     get:
       summary: "Get all bookings from database"
       tags: [Bookings]
-      security:
-        - ApiKeyAuth: []
+      # security:
+      #   - ApiKeyAuth: []
       responses:
         "200":
-          $ref: "#/components/responses/Retrieved"
+          $ref: "#/components/responses/Retrieved_Array"
         "500":
           $ref: "#/components/responses/Database_Error"
         "401":
@@ -70,7 +70,10 @@ paths:
   /api/session:
     get:
       summary: "Get all sessions from the database"
-      tags: [Sessions]
+      tags:
+        [Sessions]
+        # security:
+      #   - ApiKeyAuth: []
       responses:
         "200":
           $ref: "#/components/responses/Retrieved"
@@ -425,6 +428,12 @@ components:
         application/json:
           schema:
             type: object
+    Retrieved_Array:
+      description: "multiple resources has been retrieved from the database"
+      content:
+        application/json:
+          schema:
+            type: array
     Deleted:
       description: "The resource has been successfully deleted"
       content:
