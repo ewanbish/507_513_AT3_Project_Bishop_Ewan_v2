@@ -22,40 +22,40 @@ function BookingsPage() {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("");
 
-  // const getBookings = useCallback(
-  //   (filter = "") => {
-  //     setBookings([]);
-  //     setError(null);
+  const getBookings = useCallback(
+    (filter = "") => {
+      setBookings([]);
+      setError(null);
 
-  //     const request =
-  //       filter.length > 0
-  //         ? fetchAPI("GET", "/booking?filter=" + filter)
-  //         : fetchAPI("GET", "/booking");
+      const request =
+        filter.length > 0
+          ? fetchAPI("GET", "/booking?filter=" + filter)
+          : fetchAPI("GET", "/booking");
 
-  //     request
-  //       .then((response) => {
-  //         if (response.status == 200) {
-  //           if (response.body.length > 0) {
-  //             setError(null);
-  //             setBookings(response.body);
-  //           } else {
-  //             setBookings([]);
-  //             setError("No bookings found...");
-  //           }
-  //         } else {
-  //           setError(response.body.message);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         setError(error);
-  //       });
-  //   },
-  //   [setError, setBookings]
-  // );
+      request
+        .then((response) => {
+          if (response.status == 200) {
+            if (response.body.length > 0) {
+              setError(null);
+              setBookings(response.body);
+            } else {
+              setBookings([]);
+              setError("No bookings found...");
+            }
+          } else {
+            setError(response.body.message);
+          }
+        })
+        .catch((error) => {
+          setError(error);
+        });
+    },
+    [setError, setBookings]
+  );
 
-  // useEffect(() => {
-  //   getBookings();
-  // }, [getBookings]);
+  useEffect(() => {
+    getBookings();
+  }, [getBookings]);
   return (
     <section className="flex flex-col items-center">
       <div className="join p-4 self-stretch">
@@ -85,14 +85,14 @@ function BookingsPage() {
           {bookings.map((booking) => (
             <li className="list-row" key={booking.bookingId}>
               <div>
-                <div>{booking.session.activity}</div>
+                <div>{booking.session.activity.activity_name}</div>
                 <div className="text-xs uppercase font-semibold opacity-60">
-                  {booking.session.time}
+                  {booking.session.startTime} - {booking.session.endTime}
                 </div>
               </div>
               <div>
                 <div className="text-xs font-semibold opacity-60">
-                  {booking.session.location}
+                  {booking.session.location.location_name}
                 </div>
               </div>
               <button className="btn btn-square btn-primary">

@@ -66,7 +66,10 @@ export class UserModel extends DatabaseModel {
           ? this.tableToModel(result[0].users)
           : Promise.reject("user not found")
       )
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
   }
 
   static getByAuthenticationKey(authenticationKey) {
@@ -156,7 +159,10 @@ export class UserModel extends DatabaseModel {
       .then((result) =>
         result.affectedRows > 0 ? result : Promise.reject("user not found")
       )
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
   }
 }
 

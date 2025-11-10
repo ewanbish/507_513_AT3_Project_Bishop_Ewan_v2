@@ -74,9 +74,24 @@ paths:
         [Sessions]
         # security:
       #   - ApiKeyAuth: []
+      parameters:
+        - in: query
+          name: start_date
+          schema:
+            type: string
+            format: date
+          required: false
+          description: "Start date filter (YYYY-MM-DD)"
+        - in: query
+          name: end_date
+          schema:
+            type: string
+            format: date
+          required: false
+          description: "End date filter (YYYY-MM-DD)"
       responses:
         "200":
-          $ref: "#/components/responses/Retrieved"
+          $ref: "#/components/responses/Retrieved_Array"
         "500":
           $ref: "#/components/responses/Database_Error"
         "401":

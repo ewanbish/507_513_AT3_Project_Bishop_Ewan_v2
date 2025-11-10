@@ -16,39 +16,39 @@ function SessionPageView() {
   });
   const [error, setError] = useState(null);
 
-  // const getSessions = useCallback(() => {
-  //   const today = new Date();
+  const getSessions = useCallback(() => {
+    const today = new Date();
 
-  //   const mondayOfThisWeek = new Date();
-  //   mondayOfThisWeek.setDate(today.getDate() - (today.getDay() - 1));
-  //   const startDate = toLocaleDateString(mondayOfThisWeek);
-  //   const sundayOfThisWeek = new Date(mondayOfThisWeek);
-  //   sundayOfThisWeek.setDate(sundayOfThisWeek.getDate() + 6);
-  //   const endDate = toLocaleDateString(sundayOfThisWeek);
+    const mondayOfThisWeek = new Date();
+    mondayOfThisWeek.setDate(today.getDate() - (today.getDay() - 1));
+    const startDate = toLocaleDateString(mondayOfThisWeek);
+    const sundayOfThisWeek = new Date(mondayOfThisWeek);
+    sundayOfThisWeek.setDate(sundayOfThisWeek.getDate() + 6);
+    const endDate = toLocaleDateString(sundayOfThisWeek);
 
-  //   fetchAPI("GET", `/session?start_date=${startDate}&end_date=${endDate}`)
-  //     .then((response) => {
-  //       if (response.status == 200) {
-  //         if (response.body.length > 0) {
-  //           setSessionsByDay(partitionByDay(response.body));
-  //           setError(null);
-  //         } else {
-  //           setSessionsByDay({});
-  //           setError("No sessions found...");
-  //         }
-  //       } else {
-  //         setError(response.body.message);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       setError(error);
-  //     });
-  // }, [setSessionsByDay]);
+    fetchAPI("GET", `/session?start_date=${startDate}&end_date=${endDate}`)
+      .then((response) => {
+        if (response.status == 200) {
+          if (response.body.length > 0) {
+            setSessionsByDay(partitionByDay(response.body));
+            setError(null);
+          } else {
+            setSessionsByDay({});
+            setError("No sessions found...");
+          }
+        } else {
+          setError(response.body.message);
+        }
+      })
+      .catch((error) => {
+        setError(error);
+      });
+  }, [setSessionsByDay]);
 
-  // // Fetch sales on first render
-  // useEffect(() => {
-  //   getSessions();
-  // }, [getSessions]);
+  // Fetch sales on first render
+  useEffect(() => {
+    getSessions();
+  }, [getSessions]);
 
   return (
     <section className="flex flex-col items-center">

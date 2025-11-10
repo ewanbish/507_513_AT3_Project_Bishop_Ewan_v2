@@ -69,7 +69,10 @@ export class SessionModel extends DatabaseModel {
           Promise.reject("session not found");
         }
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        throw new error();
+      });
   }
   /**
    * Retrieves all active sessions from the sessions table that occur on a specific date.

@@ -1,6 +1,10 @@
 import express from "express";
 import { BookingModel } from "../../models/BookingModel.mjs";
+import { UserModel } from "../../models/UserModel.mjs";
+import { SessionModel } from "../../models/SessionModel.mjs";
 import { APIAuthenticationController } from "./APIAuthenticationController.mjs";
+import { ActivitiesModel } from "../../models/ActivitiesModel.mjs";
+import { LocationModel } from "../../models/LocationsModel.mjs";
 export class APIBookingController {
   static routes = express.Router();
 
@@ -37,7 +41,33 @@ export class APIBookingController {
   static async getBookings(req, res) {
     try {
       const allBookings = await BookingModel.getAll();
-      res.status(200).json(allBookings);
+
+      const fullBookings = await Promise.all(
+        allBookings.map(async (booking) => {
+          try {
+            const user = await UserModel.getById(booking.userId);
+            const session = await SessionModel.getById(booking.sessionId);
+            const trainer = await UserModel.getById(session.trainer);
+            const location = await LocationModel.getById(session.location);
+            const activity = await ActivitiesModel.getById(session.activity);
+            return {
+              ...booking,
+              user,
+              session: {
+                ...session,
+                trainer,
+                location,
+                activity,
+              },
+            };
+          } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Database error" });
+          }
+        })
+      );
+
+      res.status(200).json(fullBookings);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Database Error" });
