@@ -24,8 +24,25 @@ export class APISessionController {
         new Date(req.query.start_date),
         new Date(req.query.end_date)
       );
-
-      res.status(200).json(sessions);
+      const fullSessions = await Promise.all(
+        sessions.map(async (session) => {
+          try {
+            const trainer = await UserModel.getById(session.trainer);
+            const location = await LocationModel.getById(session.location);
+            const activity = await ActivitiesModel.getById(session.activity);
+            return {
+              ...session,
+              trainer,
+              location,
+              activity,
+            };
+          } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Database error" });
+          }
+        })
+      );
+      res.status(200).json(fullSessions);
     } catch (error) {
       res.status(500).json({
         message: "Database Error",
