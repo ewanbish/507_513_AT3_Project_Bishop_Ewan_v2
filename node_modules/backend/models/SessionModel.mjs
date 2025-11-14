@@ -96,6 +96,28 @@ export class SessionModel extends DatabaseModel {
    * @param {number|string} id The unique identifier of the trainer.
    * @returns {Promise<SessionModel[]>} A promise that resolves to an array of SessionModel instances.
    */
+  // static getByUserId(id) {
+  //   return this.query(
+  //     "SELECT sessionId, activity_id, trainer_id, location_id, DATE_FORMAT(date, '%Y-%m-%d') AS date, start_time, end_time FROM sessions WHERE trainer_id = ? AND deleted = 0",
+  //     [id]
+  //   )
+  //     .then((results) => {
+  //       console.log("results: ");
+  //       console.log(results);
+  //       if (results.length < 1) throw new Error("No sessions found");
+  //       console.log("here");
+  //       return results.map((row) => {
+  //         console.log("now im here");
+  //         // Flatten the weird structure
+  //         const flatRow = { ...row.sessions, ...row[""] };
+  //         return this.tableToModel(flatRow);
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //       throw error;
+  //     });
+  // }
   static getByUserId(id) {
     return this.query(
       "SELECT sessionId, activity_id, trainer_id, location_id, DATE_FORMAT(date, '%Y-%m-%d') AS date, start_time, end_time FROM sessions WHERE trainer_id = ? AND deleted = 0",
@@ -104,12 +126,20 @@ export class SessionModel extends DatabaseModel {
       .then((results) => {
         console.log("results: ");
         console.log(results);
+        if (results.length < 1) throw new Error("No sessions found");
+        console.log("here");
         return results.map((row) => {
-          const sessionData = { ...row.sessions, ...row[""] };
-          return this.tableToModel(sessionData);
+          console.log("now im here");
+          // Flatten the nested structure
+          const flatRow = { ...row.sessions, ...row[""] };
+          console.log("flatRow:", flatRow);
+          return this.tableToModel(flatRow);
         });
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
   }
   /**
    * Updates an existing session in the sessions table by its ID.
@@ -208,11 +238,19 @@ export class SessionModel extends DatabaseModel {
   static getByStartAndEndDate(start, end) {
     return this.query(
       `
-        SELECT * FROM sessions  
+        SELECT sessionId, activity_id, trainer_id, location_id, DATE_FORMAT(date, '%Y-%m-%d') AS date, start_time, end_time FROM sessions  
         WHERE sessions.date BETWEEN ? AND ? 
         AND deleted = 0
         `,
       [this.toMySqlDate(start), this.toMySqlDate(end)]
-    ).then((result) => result.map((row) => this.tableToModel(row)));
+    ).then((results) => {
+      return results.map((row) => {
+        console.log("now im here");
+        // Flatten the nested structure
+        const flatRow = { ...row.sessions, ...row[""] };
+        console.log("flatRow:", flatRow);
+        return this.tableToModel(flatRow);
+      });
+    });
   }
 }

@@ -16,17 +16,17 @@ export class APIBookingController {
     );
     this.routes.post(
       "/",
-      APIAuthenticationController.restrict("member"),
+      // APIAuthenticationController.restrict("member"),
       this.createBooking
     );
     this.routes.get(
       "/:id",
-      APIAuthenticationController.restrict("member"),
-      this.getBookingById
+      // APIAuthenticationController.restrict("member"),
+      this.getBookingByUserId
     );
     this.routes.delete(
       "/:id",
-      APIAuthenticationController.restrict("member"),
+      // APIAuthenticationController.restrict("member"),
       this.deleteBooking
     );
   }
@@ -50,6 +50,7 @@ export class APIBookingController {
             const trainer = await UserModel.getById(session.trainer);
             const location = await LocationModel.getById(session.location);
             const activity = await ActivitiesModel.getById(session.activity);
+
             return {
               ...booking,
               user,
@@ -66,17 +67,60 @@ export class APIBookingController {
           }
         })
       );
+      if (req.query.filter) {
+        const query = req.query.filter.toLowerCase();
+        const filtered = fullBookings.filter((booking) => {
+          return (
+            booking.session.activity.activity_name
+              ?.toLowerCase()
+              .includes(query) ||
+            booking.session.trainer.firstName?.toLowerCase().includes(query) ||
+            booking.session.trainer.lastName?.toLowerCase().includes(query) ||
+            booking.session.date?.toLowerCase().includes(query) ||
+            booking.session.location.location_name
+              ?.toLowerCase()
+              .includes(query)
+          );
+        });
 
+        return res.status(200).json(filtered);
+      }
       res.status(200).json(fullBookings);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Database Error" });
     }
   }
-  static async getBookingById(req, res) {
+  static async getBookingByUserId(req, res) {
     try {
-      const booking = await BookingModel.getById(req.params.id);
-      res.status(200).json(booking);
+      const allBookings = await BookingModel.getAllOfUserId(req.params.id);
+
+      const fullBookings = await Promise.all(
+        allBookings.map(async (booking) => {
+          try {
+            const user = await UserModel.getById(booking.userId);
+            const session = await SessionModel.getById(booking.sessionId);
+            const trainer = await UserModel.getById(session.trainer);
+            const location = await LocationModel.getById(session.location);
+            const activity = await ActivitiesModel.getById(session.activity);
+
+            return {
+              ...booking,
+              user,
+              session: {
+                ...session,
+                trainer,
+                location,
+                activity,
+              },
+            };
+          } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Database error" });
+          }
+        })
+      );
+      res.status(200).json(fullBookings);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Database Error" });
@@ -102,10 +146,18 @@ export class APIBookingController {
   static async createBooking(req, res) {
     try {
       const booking = new BookingModel(
-        req.body.id,
-        req.body.sessionId
-        //user id
+        null,
+        req.body.sessionId,
+        req.body.userId
       );
+      const check = await BookingModel.getAllOfUserId(req.body.userId);
+
+      for (const session of check) {
+        if (session.sessionId == req.body.sessionId) {
+          return res.status(400).json({ message: "Already Booked" });
+        }
+      }
+
       const result = BookingModel.create(booking);
       console.log(result.insertId);
       res.status(200).json({ message: "Booking Created" });

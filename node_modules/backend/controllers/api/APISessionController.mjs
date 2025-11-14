@@ -1,6 +1,10 @@
 import express from "express";
 import { SessionModel } from "../../models/SessionModel.mjs";
 import { APIAuthenticationController } from "./APIAuthenticationController.mjs";
+import { DatabaseModel } from "../../models/DatabaseModel.mjs";
+import { UserModel } from "../../models/UserModel.mjs";
+import { LocationModel } from "../../models/LocationsModel.mjs";
+import { ActivitiesModel } from "../../models/ActivitiesModel.mjs";
 export class APISessionController {
   static routes = express.Router();
 
@@ -10,6 +14,7 @@ export class APISessionController {
       // APIAuthenticationController.restrict("member"),
       this.getSessionsOfWeek
     );
+    this.routes.get("/xml", this.getSessionsXML);
     this.routes.get("/:id", this.getSessionById);
     this.routes.delete(
       "/:id",
@@ -18,37 +23,82 @@ export class APISessionController {
     );
   }
 
+  /**
+   * @type {express.RequestHandler}
+   *
+   *
+   */
+  static async getSessionsXML(req, res) {
+    try {
+      const date = DatabaseModel.toMySqlDate(new Date());
+      console.log("before");
+      const sessions = await SessionModel.getByUserId(17);
+      console.log("here");
+      console.log("Sessions received:", sessions);
+
+      if (!sessions || !Array.isArray(sessions)) {
+        throw new Error("Sessions is not an array");
+      }
+
+      const fullSessions = await Promise.all(
+        sessions.map(async (session) => {
+          const trainer = await UserModel.getById(session.trainer);
+          const location = await LocationModel.getById(session.location);
+          const activity = await ActivitiesModel.getById(session.activity);
+          return {
+            ...session,
+            trainer,
+            location,
+            activity,
+          };
+        })
+      );
+
+      console.log("fullSessions:", fullSessions);
+      res
+        .status(200)
+        .contentType("text/xml")
+        .render("session.xml.ejs", { sessions: fullSessions, date });
+    } catch (error) {
+      console.error("Full error details:", error);
+      res.status(500).json({
+        message: "Database Error - here",
+        errors: [error.message],
+        error: error.message,
+      });
+    }
+  }
   static async getSessionsOfWeek(req, res) {
     try {
       const sessions = await SessionModel.getByStartAndEndDate(
         new Date(req.query.start_date),
         new Date(req.query.end_date)
       );
+
+      console.log("here");
+      console.log(sessions);
+
       const fullSessions = await Promise.all(
         sessions.map(async (session) => {
-          try {
-            const trainer = await UserModel.getById(session.trainer);
-            const location = await LocationModel.getById(session.location);
-            const activity = await ActivitiesModel.getById(session.activity);
-            return {
-              ...session,
-              trainer,
-              location,
-              activity,
-            };
-          } catch (error) {
-            console.error(error);
-            return res.status(500).json({ message: "Database error" });
-          }
+          const trainer = await UserModel.getById(session.trainer);
+          const location = await LocationModel.getById(session.location);
+          const activity = await ActivitiesModel.getById(session.activity);
+          return {
+            ...session,
+            trainer,
+            location,
+            activity,
+          };
         })
       );
+
       res.status(200).json(fullSessions);
     } catch (error) {
-      res.status(500).json({
-        message: "Database Error",
-      });
+      console.error(error);
+      res.status(500).json({ message: "Database error" });
     }
   }
+
   static async getSessions(req, res) {
     try {
       const allSessions = await SessionModel.getAll();

@@ -1,24 +1,18 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { fetchAPI } from "../api.mjs";
 import { IoMdPersonAdd } from "react-icons/io";
+import ErrorAlert from "../common/ErrorAlert";
+import { useAuthenticate } from "../authentication/useAuthenticate";
+import SuccessAlert from "../common/SuccessAlert";
 function SessionPageView() {
-  const [sessionsByDay, setSessionsByDay] = useState({
-    Monday: [
-      { id: 1, activity: "Math" },
-      { id: 2, activity: "Math" },
-    ],
-    Tuesday: [{ id: 1, activity: "Math" }],
-    Wednesday: [{ id: 1, activity: "Math" }],
-    Thursday: [{ id: 1, activity: "Math" }],
-    Friday: [{ id: 1, activity: "Math" }],
-    Saturday: [{ id: 1, activity: "Math" }],
-    Sunday: [{ id: 1, activity: "Math" }],
-  });
+  const [sessionsByDay, setSessionsByDay] = useState({});
   const [error, setError] = useState(null);
-
+  const [success, setSuccess] = useState(null);
+  const { user } = useAuthenticate();
+  const [loading, setLoading] = useState(false);
   const getSessions = useCallback(() => {
     const today = new Date();
-
+    setSuccess(null);
     const mondayOfThisWeek = new Date();
     mondayOfThisWeek.setDate(today.getDate() - (today.getDay() - 1));
     const startDate = toLocaleDateString(mondayOfThisWeek);
@@ -37,7 +31,11 @@ function SessionPageView() {
             setError("No sessions found...");
           }
         } else {
-          setError(response.body.message);
+          if (response.status == 400) {
+            setError("Invalid Characters");
+          } else {
+            setError(response.body.message);
+          }
         }
       })
       .catch((error) => {
@@ -45,14 +43,37 @@ function SessionPageView() {
       });
   }, [setSessionsByDay]);
 
-  // Fetch sales on first render
   useEffect(() => {
     getSessions();
   }, [getSessions]);
 
+  const handleBook = async (sessionId) => {
+    setLoading(true);
+    setError(null);
+    const body = {
+      sessionId: sessionId,
+      userId: user.id,
+    };
+    const request = fetchAPI("POST", `/booking/`, body);
+
+    request
+      .then((response) => {
+        setLoading(false);
+        if (response.status == 200) {
+          setSuccess("Successfully Booked");
+        } else {
+          setError(response.body.message);
+        }
+      })
+      .catch((error) => {
+        setError(error);
+        setLoading(false);
+      });
+  };
+
   return (
     <section className="flex flex-col items-center">
-      {error && <span className="p-4 self-center">{error}</span>}
+      {error && <span className="p-4 self-center text-error">{error}</span>}
       {!error && Object.entries(sessionsByDay).length == 0 ? (
         <span className="loading loading-spinner loading-xl block m-4"></span>
       ) : (
@@ -67,7 +88,7 @@ function SessionPageView() {
                 {sessions.map((session) => (
                   <li className="list-row" key={session.id}>
                     <div>
-                      <div>{session.activity}</div>
+                      <div>{session.activity.activity_name}</div>
                       <div className="text-xs uppercase font-semibold opacity-60">
                         test
                       </div>
@@ -77,7 +98,10 @@ function SessionPageView() {
                         test
                       </div>
                     </div>
-                    <button className="btn btn-square btn-primary">
+                    <button
+                      className="btn btn-square btn-primary"
+                      onClick={() => handleBook(session.id)}
+                    >
                       <IoMdPersonAdd />
                     </button>
                   </li>
@@ -104,6 +128,8 @@ function SessionPageView() {
           ))}
         </ul>
       )}
+      <ErrorAlert error={error} />
+      <SuccessAlert success={success} />
       <div className="mb-18"></div>
     </section>
   );

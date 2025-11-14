@@ -7,17 +7,17 @@ export class APIUserController {
   static {
     this.routes.get(
       "/:id",
-      APIAuthenticationController.restrict("any"),
+      // APIAuthenticationController.restrict("any"),
       this.getUserById
     );
     this.routes.put(
       "/:id",
-      APIAuthenticationController.restrict("any"),
+      // APIAuthenticationController.restrict("any"),
       this.updateUser
     );
     this.routes.patch(
       "/:id",
-      APIAuthenticationController.restrict("any"),
+      // APIAuthenticationController.restrict("any"),
       this.patchUser
     );
   }
@@ -65,7 +65,7 @@ export class APIUserController {
         currentUser.firstName,
         currentUser.lastName,
         currentUser.email,
-        req.body.password,
+        req.body.newPassword,
         currentUser.role
       );
       const result = await UserModel.update(newUser);

@@ -5,9 +5,11 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import BlogPageView from "./assets/BlogPageView";
 import SessionPageView from "./assets/SessionPageView";
 import UserPage from "./assets/UserPageView";
-import LoginView from "./assets/LoginView";
+import LoginView from "./authentication/LoginView";
 import Layout from "./common/Layout";
 import BookingsPage from "./assets/BookingPageView";
+import HelloContext from "./common/HelloContext";
+import { AuthenticationProvider } from "./authentication/useAuthenticate";
 const router = createBrowserRouter([
   {
     Component: Layout,
@@ -17,11 +19,14 @@ const router = createBrowserRouter([
       { path: "/session", Component: SessionPageView },
       { path: "/booking", Component: BookingsPage },
       { path: "/user", Component: UserPage },
+      { path: "/hello", Component: HelloContext },
     ],
   },
 ]);
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthenticationProvider>
+      <RouterProvider router={router} />
+    </AuthenticationProvider>
   </StrictMode>
 );

@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchAPI } from "../api.mjs";
-import { MdErrorOutline } from "react-icons/md";
 import { useNavigate } from "react-router";
+import ErrorAlert from "../common/ErrorAlert";
+import { useAuthenticate } from "../authentication/useAuthenticate";
 
 function LoginView() {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -9,25 +10,37 @@ function LoginView() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const toggleMode = () => setIsRegistering((prev) => !prev);
+  const [waiting, setWaiting] = useState(false);
   const [error, setError] = useState(null);
-  const [visibleError, setVisibleError] = useState(null);
-  const [doAlertAnimate, setDoAlertAnimate] = useState(false);
+  const { login, status, user } = useAuthenticate();
   const navigate = useNavigate();
-  const authenticate = async () => {
-    console.log(isRegistering);
+
+  const toggleMode = () => setIsRegistering((prev) => !prev);
+
+  useEffect(() => {
+    if (status === "loaded") {
+      navigate("/blog");
+    } else if (status === "Invalid credentials") {
+      setError(status);
+    }
+  }, [status, navigate]);
+
+  const authenticate = useCallback(() => {
     try {
+      setWaiting(true);
       //TODO: Add more validation
       setError(null);
-      if (!password) {
-        setError("Password is empty");
+      if (!password || !email) {
+        setError("Please fill in all fields");
         return;
       }
-      if (!email) {
-        setError("Email is empty");
-        return;
-      }
+
       if (isRegistering === true) {
+        if (!firstName || !lastName) {
+          setError("Please fill in all fields");
+          setWaiting(false);
+          return;
+        }
         const body = JSON.stringify({
           id: null,
           email: email,
@@ -36,7 +49,7 @@ function LoginView() {
           lastName: lastName,
           role: "member",
         });
-        const request = fetchAPI("POST", `authenticate/register`, body);
+        const request = fetchAPI("POST", `authenticate/register/`, body);
 
         request.then((response) => {
           if (response.status == 200) {
@@ -45,40 +58,15 @@ function LoginView() {
             navigate("/blog");
           } else {
             setError(response.body.message);
-          }
-        });
-      } else if (isRegistering === false) {
-        const body = { email: email, password: password };
-        const request = fetchAPI("POST", `/authenticate`, body);
-
-        request.then((response) => {
-          if (response.status == 200) {
-            navigate("/blog");
-          } else {
-            setError(response.body.message);
+            setWaiting(false);
           }
         });
       }
     } catch (error) {
+      setWaiting(false);
       console.error(error);
     }
-  };
-
-  useEffect(() => {
-    if (error) {
-      setVisibleError(error); // show the alert
-      setTimeout(() => setDoAlertAnimate(true), 1);
-
-      const timer = setTimeout(() => {
-        setDoAlertAnimate(false);
-        const hideTimer = setTimeout(() => setVisibleError(null), 300); // match transition duration
-        setError(null);
-        return () => clearTimeout(hideTimer);
-      }, 2000);
-
-      return () => clearTimeout(timer); // cleanup if error changes
-    }
-  }, [error]);
+  }, [setError, error, password, email, firstName, lastName, isRegistering]);
 
   return (
     <section className="flex justify-center">
@@ -122,18 +110,23 @@ function LoginView() {
           placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
         />
-        {isRegistering && (
-          <>
-            <label className="label">Confirm Password</label>
-            <input
-              type="password"
-              className="input"
-              placeholder="Confirm Password"
-            />
-          </>
-        )}
-        <button className="btn btn-primary mt-4" onClick={authenticate}>
-          {isRegistering ? "Register" : "Login"}
+        <button
+          className="btn btn-primary mt-4"
+          onClick={() => {
+            if (isRegistering) {
+              authenticate();
+            } else {
+              login(email, password);
+            }
+          }}
+        >
+          {status == "authenticating" || waiting ? (
+            <span className="loading loading-spinner"></span>
+          ) : isRegistering ? (
+            "Register"
+          ) : (
+            "Login"
+          )}
         </button>
 
         {/* Toggle button */}
@@ -145,23 +138,7 @@ function LoginView() {
           {isRegistering ? "Login" : "Register"}
         </button>
       </fieldset>
-      {visibleError && (
-        <div
-          role="alert"
-          className={`
-  alert alert-error fixed bottom-4 left-1/2 w-auto max-w-sm z-50 flex items-center gap-2
-  transform transition-all duration-300
-  ${
-    doAlertAnimate
-      ? "translate-x-[-50%] translate-y-0"
-      : "translate-x-[-50%] translate-y-32"
-  }
-`}
-        >
-          <MdErrorOutline className="text-lg" />
-          <span>{visibleError}</span>
-        </div>
-      )}
+      <ErrorAlert error={error} onClear={() => setError(null)} />
     </section>
   );
 }

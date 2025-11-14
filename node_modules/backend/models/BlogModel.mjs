@@ -68,7 +68,7 @@ export class BlogModel extends DatabaseModel {
    * @returns {Promise} A promise that resolves when the post is successfully created.
    * @throws {Error} If the database query fails.
    */
-  static create(post) {
+  static async create(post) {
     return this.query(
       `INSERT INTO blog_posts (postId, userId, postContent, postTitle)
     VALUES (?, ?, ?, ?)`,

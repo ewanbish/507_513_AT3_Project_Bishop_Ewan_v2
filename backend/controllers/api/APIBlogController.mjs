@@ -8,13 +8,13 @@ export class APIBlogController {
   static {
     this.routes.post(
       "/",
-      APIAuthenticationController.restrict("any"),
+      // APIAuthenticationController.restrict("any"),
       this.createBlog
     );
     this.routes.get("/", this.getBlogPosts);
     this.routes.delete(
       "/:id",
-      APIAuthenticationController.restrict("any"),
+      // APIAuthenticationController.restrict("any"),
       this.deleteBlog
     );
   }
@@ -22,15 +22,20 @@ export class APIBlogController {
   static async createBlog(req, res) {
     try {
       const post = new BlogModel(
+        null,
         req.body.id,
         //user id,
         req.body.postContent,
-        req.body.postTite
+        req.body.postTitle
       );
       const result = await BlogModel.create(post);
-      console.log(result.insertId);
+      post.id = result.insertId;
+      const user = await UserModel.getById(post.userId);
+      post.user = user;
+      console.log(post);
       res.status(200).json({
         message: "Post Created",
+        newPost: post,
       });
     } catch (error) {
       console.error(error);
@@ -71,7 +76,8 @@ export class APIBlogController {
   }
   static async deleteBlog(req, res) {
     try {
-      const result = BlogModel.delete(req.params.id);
+      const result = await BlogModel.delete(req.params.id);
+      console.log(result);
       if (result.affectedRows == 1) {
         res.status(200).json({
           message: "Post Deleted",

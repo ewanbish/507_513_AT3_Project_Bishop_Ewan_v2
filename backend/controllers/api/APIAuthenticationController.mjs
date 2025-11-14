@@ -15,6 +15,7 @@ export class APIAuthenticationController {
       this.restrict("any"),
       this.handleAuthenticate
     );
+    this.routes.get("/authenticate/resume", this.handleResume);
   }
 
   /**
@@ -50,6 +51,15 @@ export class APIAuthenticationController {
     next();
   }
 
+  static async handleResume(req, res) {
+    const authenticationKey = req.headers["x-auth-key"];
+    try {
+      const result = await UserModel.getByAuthenticationKey(authenticationKey);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ message: "Please login" });
+    }
+  }
   /**
    *
    * @type {express.RequestHandler}
@@ -72,6 +82,7 @@ export class APIAuthenticationController {
           res.status(200).json({
             message: "Successfully authenticated",
             key: user.authenticationKey,
+            user: user,
           });
         } else {
           console.log("fail");
