@@ -3,8 +3,8 @@ paths:
     get:
       summary: "Get all bookings from database"
       tags: [Bookings]
-      # security:
-      #   - ApiKeyAuth: []
+      security:
+        - ApiKeyAuth: []
       parameters:
         - name: filter
           in: query
@@ -25,8 +25,8 @@ paths:
     post:
       summary: "Create a new booking"
       tags: [Bookings]
-      # security:
-      #   - ApiKeyAuth: []
+      security:
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -58,8 +58,8 @@ paths:
     get:
       summary: "Get a users bookings from the database"
       tags: [Bookings]
-      # security:
-      #   - ApiKeyAuth: []
+      security:
+        - ApiKeyAuth: []
       responses:
         "200":
           $ref: "#/components/responses/Retrieved_Array"
@@ -85,14 +85,66 @@ paths:
           $ref: "#/components/responses/Not_Authenticated"
         "403":
           $ref: "#/components/responses/Forbidden"
-
+  /api/booking/xml/{id}:
+    get:
+      summary: "Export a certain users bookings to XML"
+      tags: [Bookings]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: "Complete bookings XML"
+          content:
+            text/xml:
+              schema:
+                type: array
+                xml:
+                  name: bookings
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: 1
+                    date:
+                      type: string
+                      format: date
+                    start-time:
+                      type: string
+                      format: time
+                    end-time:
+                      type: string
+                      format: time
+                    trainer:
+                      type: object
+                      properties:
+                        email:
+                          type: string
+                          example: jane@doe.mail
+                        first-name:
+                          type: string
+                          example: Jane
+                        last-name:
+                          type: string
+                          example: Doe
+                    activity-name:
+                      type: string
+                      example: Pilates
+                    location-name:
+                      type: string
+                      example: Chermside
+        default:
+          $ref: "#/components/responses/Database_Error"
   /api/session:
     get:
       summary: "Get all sessions from the database"
-      tags:
-        [Sessions]
-        # security:
-      #   - ApiKeyAuth: []
+      tags: [Sessions]
+      security:
+        - ApiKeyAuth: []
       parameters:
         - in: query
           name: start_date
@@ -120,13 +172,13 @@ paths:
 
   /api/session/{id}:
     get:
-      summary: "Get a specific session from the database"
+      summary: "Get sessions by a user's id"
       tags: [Sessions]
       security:
         - ApiKeyAuth: []
       responses:
         "200":
-          $ref: "#/components/responses/Retrieved"
+          $ref: "#/components/responses/Retrieved_Array"
         "404":
           $ref: "#/components/responses/Not_Found"
         "500":
@@ -172,8 +224,8 @@ paths:
     post:
       summary: "Create a new Blog Post"
       tags: [Blog]
-      # security:
-      #   - ApiKeyAuth: []
+      security:
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -193,8 +245,8 @@ paths:
     delete:
       summary: "Delete a specific Blog Post from the database"
       tags: [Blog]
-      # security:
-      #   - ApiKeyAuth: []
+      security:
+        - ApiKeyAuth: []
       responses:
         200:
           $ref: "#/components/responses/Deleted"
@@ -239,8 +291,8 @@ paths:
     put:
       summary: "Update an existing user"
       tags: [Users]
-      # security:
-      #   - ApiKeyAuth: []
+      security:
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -261,8 +313,8 @@ paths:
     patch:
       summary: "Partially update an existing user"
       tags: [Users]
-      # security:
-      #   - ApiKeyAuth: []
+      security:
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -324,10 +376,16 @@ paths:
         "200":
           $ref: "#/components/responses/Authenticated"
 
-  /api/session/xml:
+  /api/session/xml/{id}:
     get:
-      summary: "Export all complete orders to XML"
+      summary: "Export a certain trainers sessions to XML"
       tags: [Sessions]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
       responses:
         200:
           description: "Complete sessions XML"
@@ -340,9 +398,6 @@ paths:
                 items:
                   type: object
                   properties:
-                    id:
-                      type: string
-                      example: 1
                     date:
                       type: string
                       format: date
@@ -355,9 +410,6 @@ paths:
                     trainer:
                       type: object
                       properties:
-                        id:
-                          type: string
-                          example: 1
                         email:
                           type: string
                           example: jane@doe.mail
@@ -367,33 +419,12 @@ paths:
                         last-name:
                           type: string
                           example: Doe
-                        password:
-                          type: string
-                          example: pass123
-                        deleted:
-                          type: string
-                          example: 0
-                        authentication-key:
-                          type: string
-                          example: Auth
-                    activity:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          example: 1
-                        activity-name:
-                          type: string
-                          example: Pilates
-                    location:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          example: 1
-                        location-name:
-                          type: string
-                          example: Chermside
+                    activity-name:
+                      type: string
+                      example: Pilates
+                    location-name:
+                      type: string
+                      example: Chermside
         default:
           $ref: "#/components/responses/Database_Error"
 components:

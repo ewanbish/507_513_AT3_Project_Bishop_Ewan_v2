@@ -4,18 +4,18 @@ import { MdOutlineCancel } from "react-icons/md";
 import ErrorAlert from "../common/ErrorAlert";
 import { useAuthenticate } from "../authentication/useAuthenticate";
 import SuccessAlert from "../common/SuccessAlert";
-function BookingsPage() {
-  const [bookings, setBookings] = useState([]);
+function TrainerSessionPage() {
+  const [sessions, setSessions] = useState([]);
   const [error, setError] = useState(null);
   const { user } = useAuthenticate();
   const [loading, setLoading] = useState(null);
   const [success, setSuccess] = useState(null);
   const authKey = localStorage.getItem("auth-key");
-  const getBookings = useCallback(() => {
-    setBookings([]);
+  const getSessions = useCallback(() => {
+    setSessions([]);
     setError(null);
 
-    const request = fetchAPI("GET", `/booking/${user?.id}`, null, authKey);
+    const request = fetchAPI("GET", `/session/${user?.id}`, null, authKey);
 
     request
       .then((response) => {
@@ -23,11 +23,10 @@ function BookingsPage() {
           if (response.body.length > 0) {
             console.log(response);
             setError(null);
-            setBookings(response.body);
-            console.log(bookings);
+            setSessions(response.body);
           } else {
-            setBookings([]);
-            setError("No bookings found...");
+            setSessions([]);
+            setError("No sessions found...");
           }
         } else {
           if (response.status == 400) {
@@ -38,80 +37,59 @@ function BookingsPage() {
         }
       })
       .catch((error) => {
-        setError(error);
+        setError(error.message);
       });
   }, [user?.id]);
 
   useEffect(() => {
-    getBookings();
-  }, [getBookings]);
-
-  const handleDelete = async (bookingId) => {
-    setLoading(true);
-    setError(null);
-    const request = fetchAPI("DELETE", `/booking/${bookingId}`, null, authKey);
-
-    request
-      .then((response) => {
-        setLoading(false);
-        if (response.status == 200) {
-          setSuccess("Successfully Deleted");
-          setBookings((prev) =>
-            prev.filter((booking) => booking.id !== bookingId)
-          );
-        } else {
-          setError(response.body.message);
-        }
-      })
-      .catch((error) => {
-        setError(error);
-        setLoading(false);
-      });
-  };
+    if (user?.id) {
+      getSessions();
+    }
+  }, [getSessions, user?.id]);
 
   return (
     <section className="flex flex-col items-center">
       {error && <span className="p-4 text-error">{error}</span>}
-      {bookings.length == 0 ? (
+      {sessions.length == 0 ? (
         !error && (
           <span className="loading loading-spinner loading-xl my-8"></span>
         )
       ) : (
         <ul className="list bg-base-100 rounded-box shadow-md w-96">
           <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">
-            Your Bookings
+            Your Sessions
           </li>
 
-          {bookings.map((booking) => (
-            <li className="list-row" key={booking.id}>
+          {sessions.map((session) => (
+            <li className="list-row" key={session.id}>
               <div>
-                <div>{booking.session.activity.activity_name}</div>
+                <div>{session.activity.activity_name}</div>
                 <div className="text-xs uppercase font-semibold opacity-60 my-1">
-                  {booking.session.date}
+                  {session.date}
                 </div>
                 <div className="text-xs uppercase font-semibold opacity-60">
-                  {booking.session.startTime} - {booking.session.endTime}
+                  {session.startTime} - {session.endTime}
                 </div>
               </div>
               <div className="ml-1">
                 <div className="text-xs opacity-60">
-                  Trainer: {booking.session.trainer.firstName}{" "}
-                  {booking.session.trainer.lastName}
+                  Trainer: {session.trainer.firstName}{" "}
+                  {session.trainer.lastName}
                 </div>
                 <div className="text-xs  opacity-60 my-1">
-                  Location: {booking.session.location.location_name}
+                  Location: {session.location.location_name}
                 </div>
               </div>
-              <button
+              {/* <button
                 className="btn btn-square btn-primary"
-                onClick={() => handleDelete(booking.id)}
+                // onClick={() => handleDelete(booking.id)}
               >
                 {loading ? (
                   <span className="loading loading-spinner"></span>
                 ) : (
                   <MdOutlineCancel />
                 )}
-              </button>
+              </button> */}
             </li>
           ))}
         </ul>
@@ -122,4 +100,4 @@ function BookingsPage() {
   );
 }
 
-export default BookingsPage;
+export default TrainerSessionPage;

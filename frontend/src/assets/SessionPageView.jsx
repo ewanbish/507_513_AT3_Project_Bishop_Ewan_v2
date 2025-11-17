@@ -10,6 +10,7 @@ function SessionPageView() {
   const [success, setSuccess] = useState(null);
   const { user } = useAuthenticate();
   const [loading, setLoading] = useState(false);
+  const authKey = localStorage.getItem("auth-key");
   const getSessions = useCallback(() => {
     const today = new Date();
     setSuccess(null);
@@ -20,7 +21,12 @@ function SessionPageView() {
     sundayOfThisWeek.setDate(sundayOfThisWeek.getDate() + 6);
     const endDate = toLocaleDateString(sundayOfThisWeek);
 
-    fetchAPI("GET", `/session?start_date=${startDate}&end_date=${endDate}`)
+    fetchAPI(
+      "GET",
+      `/session?start_date=${startDate}&end_date=${endDate}`,
+      null,
+      authKey
+    )
       .then((response) => {
         if (response.status == 200) {
           if (response.body.length > 0) {
@@ -54,7 +60,7 @@ function SessionPageView() {
       sessionId: sessionId,
       userId: user.id,
     };
-    const request = fetchAPI("POST", `/booking/`, body);
+    const request = fetchAPI("POST", `/booking/`, body, authKey);
 
     request
       .then((response) => {
@@ -75,7 +81,7 @@ function SessionPageView() {
     <section className="flex flex-col items-center">
       {error && <span className="p-4 self-center text-error">{error}</span>}
       {!error && Object.entries(sessionsByDay).length == 0 ? (
-        <span className="loading loading-spinner loading-xl block m-4"></span>
+        <span className="loading loading-spinner loading-xl block m-4 my-8"></span>
       ) : (
         <ul className="list bg-base-100 self-stretch flex items-center justify-center">
           {Object.entries(sessionsByDay).map(([day, sessions]) => (
@@ -102,7 +108,11 @@ function SessionPageView() {
                       className="btn btn-square btn-primary"
                       onClick={() => handleBook(session.id)}
                     >
-                      <IoMdPersonAdd />
+                      {loading ? (
+                        <span className="loading loading-spinner"></span>
+                      ) : (
+                        <IoMdPersonAdd />
+                      )}
                     </button>
                   </li>
                 ))}

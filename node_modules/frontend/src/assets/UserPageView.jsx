@@ -14,11 +14,12 @@ function UserPage() {
   const [error, setError] = useState();
   const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(null);
+  const authKey = localStorage.getItem("auth-key");
   const getUser = useCallback(() => {
     console.log(user);
     setSelectedUser(null);
     setLoading(true);
-    fetchAPI("GET", `/user/${user.id}`)
+    fetchAPI("GET", `/user/${user.id}`, null, authKey)
       .then((response) => {
         if (response.status == 200) {
           setSelectedUser(response.body);

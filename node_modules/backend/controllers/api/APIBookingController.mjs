@@ -5,32 +5,81 @@ import { SessionModel } from "../../models/SessionModel.mjs";
 import { APIAuthenticationController } from "./APIAuthenticationController.mjs";
 import { ActivitiesModel } from "../../models/ActivitiesModel.mjs";
 import { LocationModel } from "../../models/LocationsModel.mjs";
+import { DatabaseModel } from "../../models/DatabaseModel.mjs";
 export class APIBookingController {
   static routes = express.Router();
 
   static {
     this.routes.get(
       "/",
-      // APIAuthenticationController.restrict("member"),
+      APIAuthenticationController.restrict("member"),
       this.getBookings
     );
     this.routes.post(
       "/",
-      // APIAuthenticationController.restrict("member"),
+      APIAuthenticationController.restrict("member"),
       this.createBooking
     );
     this.routes.get(
+      "/xml/:id",
+      APIAuthenticationController.restrict("member"),
+      this.getBookingsXML
+    );
+    this.routes.get(
       "/:id",
-      // APIAuthenticationController.restrict("member"),
+      APIAuthenticationController.restrict("member"),
       this.getBookingByUserId
     );
     this.routes.delete(
       "/:id",
-      // APIAuthenticationController.restrict("member"),
+      APIAuthenticationController.restrict("member"),
       this.deleteBooking
     );
   }
 
+  static async getBookingsXML(req, res) {
+    try {
+      const date = DatabaseModel.toMySqlDate(new Date());
+      const bookings = await BookingModel.getBookingsXML(req.params.id);
+
+      const fullBookings = await Promise.all(
+        bookings.map(async (booking) => {
+          try {
+            const user = await UserModel.getById(booking.userId);
+            const session = await SessionModel.getByIdForXML(booking.sessionId);
+            const trainer = await UserModel.getByIdForXML(session.trainer);
+            const location = await LocationModel.getByIdForXML(
+              session.location
+            );
+            const activity = await ActivitiesModel.getByIdForXML(
+              session.activity
+            );
+
+            return {
+              ...booking,
+              user,
+              session: {
+                ...session,
+                trainer,
+                location,
+                activity,
+              },
+            };
+          } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Database error" });
+          }
+        })
+      );
+      res
+        .status(200)
+        .contentType("text/xml")
+        .render("booking.xml.ejs", { bookings: fullBookings, date });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Database error" });
+    }
+  }
   /**
    *
    * @param {*} req

@@ -8,6 +8,7 @@ import UserPage from "./assets/UserPageView";
 import LoginView from "./authentication/LoginView";
 import Layout from "./common/Layout";
 import BookingsPage from "./assets/BookingPageView";
+import TrainerSessionPage from "./assets/TrainerSessionPage";
 import HelloContext from "./common/HelloContext";
 import { AuthenticationProvider } from "./authentication/useAuthenticate";
 const router = createBrowserRouter([
@@ -19,7 +20,7 @@ const router = createBrowserRouter([
       { path: "/session", Component: SessionPageView },
       { path: "/booking", Component: BookingsPage },
       { path: "/user", Component: UserPage },
-      { path: "/hello", Component: HelloContext },
+      { path: "/trainer", Component: TrainerSessionPage },
     ],
   },
 ]);

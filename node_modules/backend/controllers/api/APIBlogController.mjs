@@ -8,13 +8,13 @@ export class APIBlogController {
   static {
     this.routes.post(
       "/",
-      // APIAuthenticationController.restrict("any"),
+      APIAuthenticationController.restrict("any"),
       this.createBlog
     );
     this.routes.get("/", this.getBlogPosts);
     this.routes.delete(
       "/:id",
-      // APIAuthenticationController.restrict("any"),
+      APIAuthenticationController.restrict("any"),
       this.deleteBlog
     );
   }

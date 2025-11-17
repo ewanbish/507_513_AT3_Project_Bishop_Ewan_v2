@@ -11,11 +11,11 @@ export class APISessionController {
   static {
     this.routes.get(
       "/",
-      // APIAuthenticationController.restrict("member"),
+      APIAuthenticationController.restrict("member"),
       this.getSessionsOfWeek
     );
-    this.routes.get("/xml", this.getSessionsXML);
-    this.routes.get("/:id", this.getSessionById);
+    this.routes.get("/xml/:id", this.getSessionsXML);
+    this.routes.get("/:id", this.getSessionByUserId);
     this.routes.delete(
       "/:id",
       APIAuthenticationController.restrict("trainer"),
@@ -29,11 +29,10 @@ export class APISessionController {
    *
    */
   static async getSessionsXML(req, res) {
+    console.log("hit");
     try {
       const date = DatabaseModel.toMySqlDate(new Date());
-      console.log("before");
-      const sessions = await SessionModel.getByUserId(17);
-      console.log("here");
+      const sessions = await SessionModel.getByUserId(req.params.id);
       console.log("Sessions received:", sessions);
 
       if (!sessions || !Array.isArray(sessions)) {
@@ -108,10 +107,24 @@ export class APISessionController {
       res.status(500).json({ message: "Database Error" });
     }
   }
-  static async getSessionById(req, res) {
+  static async getSessionByUserId(req, res) {
     try {
-      const session = await SessionModel.getById(req.params.id);
-      res.status(200).json(session);
+      const sessions = await SessionModel.getByUserId(req.params.id);
+      const fullSessions = await Promise.all(
+        sessions.map(async (session) => {
+          const trainer = await UserModel.getById(session.trainer);
+          const location = await LocationModel.getById(session.location);
+          const activity = await ActivitiesModel.getById(session.activity);
+          return {
+            ...session,
+            trainer,
+            location,
+            activity,
+          };
+        })
+      );
+
+      res.status(200).json(fullSessions);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Database Error" });

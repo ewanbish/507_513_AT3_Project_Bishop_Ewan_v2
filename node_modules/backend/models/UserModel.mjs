@@ -71,6 +71,23 @@ export class UserModel extends DatabaseModel {
         throw error;
       });
   }
+  /**
+   * Retrieves a single active user from the users table by its ID.
+   * @param {number|string} id The unique identifier of the user to fetch.
+   * @returns {Promise<UserModel>} A promise that resolves to a UserModel instance if found, or rejects with "user not found" if no matching row exists.
+   */
+  static getByIdForXML(id) {
+    return this.query("SELECT * FROM users WHERE userId = ?", [id])
+      .then((result) =>
+        result.length > 0
+          ? this.tableToModel(result[0].users)
+          : Promise.reject("user not found")
+      )
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
+  }
 
   static getByAuthenticationKey(authenticationKey) {
     return this.query(

@@ -135,4 +135,13 @@ export class BookingModel extends DatabaseModel {
       throw error;
     });
   }
+  static getBookingsXML(id) {
+    return this.query("SELECT * FROM bookings WHERE UserId = ?", [id])
+      .then((results) => {
+        console.log("results: ");
+        console.log(results);
+        return results.map((row) => this.tableToModel(row.bookings));
+      })
+      .catch((error) => console.error(error));
+  }
 }

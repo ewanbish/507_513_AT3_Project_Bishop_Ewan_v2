@@ -44,6 +44,20 @@ export class LocationModel extends DatabaseModel {
       .catch((error) => console.error(error));
   }
   /**
+   * Retrieves a single active location from the locations table by its ID.
+   * @param {number|string} id The unique identifier of the location to fetch.
+   * @returns {Promise<LocationModel>} A promise that resolves to a LocationModel instance if found, or rejects with "location not found" if no matching row exists.
+   */
+  static getByIdForXML(id) {
+    return this.query("SELECT * FROM locations WHERE location_id = ?", [id])
+      .then((result) =>
+        result.length > 0
+          ? this.tableToModel(result[0].locations)
+          : Promise.reject("location not found")
+      )
+      .catch((error) => console.error(error));
+  }
+  /**
    * Inserts a new location record into the locations table.
    * @param {{id:number|string,location_name:string}} location The location data to insert.
    * @returns {Promise<Object>} A promise that resolves with the database insert result.

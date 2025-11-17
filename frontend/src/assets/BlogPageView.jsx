@@ -13,6 +13,7 @@ function BlogPage() {
   const [postTitle, setPostTitle] = useState("");
   const [postContent, setPostContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const authKey = localStorage.getItem("auth-key");
   const getPosts = useCallback(
     (filter = "") => {
       setBlogPosts([]);
@@ -50,7 +51,7 @@ function BlogPage() {
   const handleDelete = async (postId) => {
     setIsLoading(true);
     setError(null);
-    const request = fetchAPI("DELETE", `/blog/${postId}`);
+    const request = fetchAPI("DELETE", `/blog/${postId}`, null, authKey);
 
     request
       .then((response) => {
@@ -70,11 +71,16 @@ function BlogPage() {
   const handleCreate = async () => {
     setIsLoading(true);
     setError(null);
-    const request = fetchAPI("POST", `/blog`, {
-      postContent,
-      postTitle,
-      id: user.id,
-    });
+    const request = fetchAPI(
+      "POST",
+      `/blog`,
+      {
+        postContent,
+        postTitle,
+        id: user.id,
+      },
+      authKey
+    );
     request
       .then((response) => {
         setIsLoading(false);

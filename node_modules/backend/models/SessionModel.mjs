@@ -75,6 +75,32 @@ export class SessionModel extends DatabaseModel {
       });
   }
   /**
+   * Retrieves a single active session from the sessions table by its ID.
+   * @param {number|string} id The unique identifier of the session to fetch.
+   * @returns {Promise<SessionModel>} A promise that resolves to a SessionModel instance if found, or rejects with "session not found" if no matching row exists.
+   */
+  static getByIdForXML(id) {
+    return this.query(
+      `SELECT sessionId, activity_id, trainer_id, location_id, DATE_FORMAT(date, '%Y-%m-%d') AS date, DATE_FORMAT(start_time, '%h:%i %p') AS start_time,
+      DATE_FORMAT(end_time, '%h:%i %p') AS end_time FROM sessions WHERE sessionId = ? ORDER BY ABS(DATEDIFF(date, CURDATE())) ASC`,
+      [id]
+    )
+      .then((result) => {
+        const row = result[0];
+
+        if (result.length > 0) {
+          const sessionData = { ...row.sessions, ...row[""] };
+          return this.tableToModel(sessionData);
+        } else {
+          Promise.reject("session not found");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        throw new error();
+      });
+  }
+  /**
    * Retrieves all active sessions from the sessions table that occur on a specific date.
    * @param {string|Date} date The date to filter sessions by.
    * @returns {Promise<SessionModel[]>} A promise that resolves to an array of SessionModel instances.

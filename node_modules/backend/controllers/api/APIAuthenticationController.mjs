@@ -170,6 +170,7 @@ export class APIAuthenticationController {
           });
         }
       } else {
+        console.log("caught here");
         res.status(401).json({
           message: "Not authenticated",
           errors: ["Please authenticate to access the requested resource"],
