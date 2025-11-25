@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchAPI } from "../api.mjs";
 import ErrorAlert from "../common/ErrorAlert";
+import SuccessAlert from "../common/SuccessAlert";
 import { useAuthenticate } from "../authentication/useAuthenticate";
 import { useNavigate } from "react-router";
 function UserPage() {
@@ -13,6 +14,7 @@ function UserPage() {
   const [error, setError] = useState();
   const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(null);
+  const [success, setSuccess] = useState(null);
   const navigate = useNavigate();
   const authKey = localStorage.getItem("auth-key");
   const getUser = useCallback(() => {
@@ -60,6 +62,7 @@ function UserPage() {
         if (response.status == 200) {
           getUser();
           setLoading(false);
+          setSuccess("User Updated");
         } else {
           if (response.status == 400) {
             setLoading(false);
@@ -84,6 +87,7 @@ function UserPage() {
           if (response.status == 200) {
             getUser();
             setLoading(false);
+            setSuccess("Password Updated");
           } else {
             if (response.status == 400) {
               setLoading(false);
@@ -184,6 +188,7 @@ function UserPage() {
       <a className="link hover:link-primary text-xs mt-[10%] ">
         Privacy Policy
       </a>
+      <SuccessAlert success={success} />
       <ErrorAlert error={error} onClear={() => setError(null)} />
     </section>
   );

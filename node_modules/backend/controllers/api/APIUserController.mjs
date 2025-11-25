@@ -48,7 +48,7 @@ export class APIUserController {
    *       "403":
    *         $ref: "#/components/responses/Forbidden"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    *
    */
   static async getUserById(req, res) {
@@ -96,7 +96,7 @@ export class APIUserController {
    *       400:
    *         $ref: "#/components/responses/Invalid_Credentials"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async updateUser(req, res) {
     try {
@@ -171,7 +171,7 @@ export class APIUserController {
    *       400:
    *         $ref: "#/components/responses/Invalid_Credentials"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async patchUser(req, res) {
     try {

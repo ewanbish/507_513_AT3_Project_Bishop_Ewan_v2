@@ -210,3 +210,14 @@ components:
               message:
                 type: string
                 example: "Invalid Credentials"
+    Generic_Error:
+      description: "Something went wrong in the program"
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [message]
+            properties:
+              message:
+                type: string
+                example: "Something went wrong..."

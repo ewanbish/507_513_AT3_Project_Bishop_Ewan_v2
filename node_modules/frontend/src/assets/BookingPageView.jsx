@@ -56,9 +56,7 @@ function BookingsPage() {
         setLoading(false);
         if (response.status == 200) {
           setSuccess("Successfully Deleted");
-          setBookings((prev) =>
-            prev.filter((booking) => booking.id !== bookingId)
-          );
+          getBookings();
         } else {
           setError(response.body.message);
         }

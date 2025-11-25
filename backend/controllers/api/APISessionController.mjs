@@ -15,7 +15,11 @@ export class APISessionController {
       APIAuthenticationController.restrict("member"),
       this.getSessionsOfWeek
     );
-    this.routes.get("/xml/:id", this.getSessionsXML);
+    this.routes.get(
+      "/xml/:id",
+      APIAuthenticationController.restrict("trainer"),
+      this.getSessionsXML
+    );
     this.routes.get(
       "/:id",
       APIAuthenticationController.restrict("trainer"),
@@ -30,6 +34,7 @@ export class APISessionController {
 
   /**
    * @type {express.RequestHandler}
+   * @openapi
    * /api/session/xml/{id}:
    *   get:
    *     summary: "Export a certain trainers sessions to XML"
@@ -86,7 +91,7 @@ export class APISessionController {
    *       "500":
    *         $ref: "#/components/responses/Database_Error"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    *
    */
   static async getSessionsXML(req, res) {
@@ -163,7 +168,7 @@ export class APISessionController {
    *       "403":
    *         $ref: "#/components/responses/Forbidden"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async getSessionsOfWeek(req, res) {
     try {
@@ -199,6 +204,8 @@ export class APISessionController {
   static async getSessions(req, res) {
     try {
       const allSessions = await SessionModel.getAll();
+      console.log("here");
+      console.log(allSessions);
       res.status(200).json({ allSessions });
     } catch (error) {
       console.error(error);
@@ -233,7 +240,7 @@ export class APISessionController {
    *       "403":
    *         $ref: "#/components/responses/Forbidden"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async getSessionByUserId(req, res) {
     try {
@@ -285,7 +292,7 @@ export class APISessionController {
    *       "403":
    *         $ref: "#/components/responses/Forbidden"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async deleteSession(req, res) {
     try {

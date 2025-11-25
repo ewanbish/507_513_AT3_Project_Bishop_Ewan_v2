@@ -61,9 +61,7 @@ function TrainerSessionPage() {
         setLoading(false);
         if (response.status == 200) {
           setSuccess("Successfully Deleted");
-          setSessions((prev) =>
-            prev.filter((session) => session.id !== sessionId)
-          );
+          getSessions();
         } else {
           setError(response.body.message);
         }

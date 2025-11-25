@@ -103,7 +103,7 @@ export class APIBookingController {
    *       "403":
    *         $ref: "#/components/responses/Forbidden"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async getBookingsXML(req, res) {
     try {
@@ -178,7 +178,7 @@ export class APIBookingController {
    *       "403":
    *         $ref: "#/components/responses/Forbidden"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async getBookings(req, res) {
     try {
@@ -261,7 +261,7 @@ export class APIBookingController {
    *       "403":
    *         $ref: "#/components/responses/Forbidden"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async getBookingByUserId(req, res) {
     try {
@@ -325,7 +325,7 @@ export class APIBookingController {
    *       "403":
    *         $ref: "#/components/responses/Forbidden"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async deleteBooking(req, res) {
     try {
@@ -380,7 +380,7 @@ export class APIBookingController {
    *       "403":
    *         $ref: "#/components/responses/Forbidden"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async createBooking(req, res) {
     try {

@@ -41,6 +41,7 @@ export class SessionModel extends DatabaseModel {
       DATE_FORMAT(end_time, '%h:%i %p') AS end_time FROM sessions WHERE deleted = 0 ORDER BY ABS(DATEDIFF(date, CURDATE())) ASC`
     )
       .then((results) => {
+        if (!results || results.length === 0) return [];
         return results.map((row) => {
           const sessionData = { ...row.sessions, ...row[""] };
           return this.tableToModel(sessionData);
@@ -152,7 +153,7 @@ export class SessionModel extends DatabaseModel {
       .then((results) => {
         console.log("results: ");
         console.log(results);
-        if (results.length < 1) throw new Error("No sessions found");
+        if (results.length < 1) return [];
         console.log("here");
         return results.map((row) => {
           console.log("now im here");

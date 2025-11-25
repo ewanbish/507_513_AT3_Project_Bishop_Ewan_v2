@@ -55,7 +55,7 @@ export class APIAuthenticationController {
    *       "500":
    *         $ref: "#/components/responses/Not_Authenticated"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async handleResume(req, res) {
     console.log("yooo");
@@ -89,7 +89,7 @@ export class APIAuthenticationController {
    *       "400":
    *         $ref: "#/components/responses/Invalid_Credentials"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    *   delete:
    *     summary: "Log out a user - Deauthenticate"
    *     tags: [Authentication]
@@ -103,7 +103,7 @@ export class APIAuthenticationController {
    *       "500":
    *         $ref: "#/components/responses/Database_Error"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
 
   static async handleAuthenticate(req, res) {
@@ -174,7 +174,7 @@ export class APIAuthenticationController {
    *       "200":
    *         $ref: "#/components/responses/Authenticated"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async handleRegister(req, res) {
     console.log("Registering...");

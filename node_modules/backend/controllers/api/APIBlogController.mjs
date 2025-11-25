@@ -44,7 +44,7 @@ export class APIBlogController {
    *       "403":
    *         $ref: "#/components/responses/Forbidden"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async createBlog(req, res) {
     try {
@@ -92,7 +92,7 @@ export class APIBlogController {
    *       500:
    *         $ref: "#/components/responses/Database_Error"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async getBlogPosts(req, res) {
     try {
@@ -151,7 +151,7 @@ export class APIBlogController {
    *       "404":
    *         $ref: "#/components/responses/Not_Found"
    *       default:
-   *         $ref: "#/components/responses/Database_Error"
+   *         $ref: "#/components/responses/Generic_Error"
    */
   static async deleteBlog(req, res) {
     try {
