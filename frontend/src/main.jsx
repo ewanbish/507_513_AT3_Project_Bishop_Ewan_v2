@@ -11,6 +11,7 @@ import BookingsPage from "./assets/BookingPageView";
 import TrainerSessionPage from "./assets/TrainerSessionPage";
 import HelloContext from "./common/HelloContext";
 import { AuthenticationProvider } from "./authentication/useAuthenticate";
+import StatusPage from "./assets/StatusPage";
 const router = createBrowserRouter([
   {
     Component: Layout,
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
       { path: "/booking", Component: BookingsPage },
       { path: "/user", Component: UserPage },
       { path: "/trainer", Component: TrainerSessionPage },
+      { path: "/status", Component: StatusPage },
     ],
   },
 ]);

@@ -25,11 +25,13 @@ function Layout() {
       ? "Bookings"
       : location.pathname == "/trainer"
       ? "Schedule"
+      : location.pathname == "/status"
+      ? "Status"
       : "Manage User";
 
   useEffect(() => {
-    if (status == "unauthenticated") {
-      navigate("/");
+    if (status == "forbidden") {
+      navigate("/status");
     }
   }, [status]);
   const getSessionsXML = async () => {
@@ -99,7 +101,7 @@ function Layout() {
   return (
     <main
       data-theme="light"
-      className="max-w-[430px] min-h-screen mx-auto shadow"
+      className="w-full max-w-[430px] min-h-screen mx-auto shadow"
     >
       <header className="navbar bg-base-100 shadow-sm">
         <div className="flex-1">

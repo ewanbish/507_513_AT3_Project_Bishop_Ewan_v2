@@ -21,17 +21,17 @@ export function AuthenticationProvider({ children }) {
       return;
     }
 
-    fetchAPI("GET", `/authenticate/resume/`, null, key)
+    fetchAPI("GET", `/authenticate/resume`, null, key)
       .then((response) => {
         if (response.status === 200) {
           setUser(response.body);
           setStatus("loaded");
         } else {
-          localStorage.removeItem("auth-key");
-          setStatus("unauthenticated");
+          // Don't log out — just mark as restricted
+          setStatus("forbidden");
         }
       })
-      .catch(() => setStatus("unauthenticated"));
+      .catch(() => setStatus("resume_failed"));
   }, []);
 
   return (
@@ -71,11 +71,57 @@ export function useAuthenticate(restrictToRoles = null) {
     },
     [setStatus, setUser]
   );
+
+  const authenticate = useCallback(
+    (email, password, firstName, lastName) => {
+      try {
+        if (!password || !email || !firstName || !lastName) {
+          setError("Please fill in all fields");
+          return;
+        }
+
+        const body = {
+          id: null,
+          email: email,
+          password: password,
+          firstName: firstName,
+          lastName: lastName,
+          role: "member",
+        };
+        const request = fetchAPI("POST", `/authenticate/register/`, body);
+
+        request.then((response) => {
+          if (response.status == 200) {
+            localStorage.setItem("auth-key", response.body.key);
+            setUser(response.body.user);
+            console.log(response);
+            console.log(response.body.message);
+            setStatus("loaded");
+          } else {
+            setError(response.body.message);
+          }
+        });
+      } catch (error) {
+        setStatus(error);
+      }
+    },
+    [setStatus, setUser]
+  );
+
+  const logout = useCallback(() => {
+    fetchAPI("DELETE", "/authenticate", null, user.authenticationKey).then(
+      (response) => {
+        setUser(null);
+        localStorage.removeItem("auth-key");
+        setStatus("removed");
+      }
+    );
+  }, [setUser, user]);
   return {
     user,
     login,
-    logout: () => {},
-    refresh: () => {},
+    authenticate,
+    logout,
     status,
   };
 }

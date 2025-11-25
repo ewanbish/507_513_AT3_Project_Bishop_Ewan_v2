@@ -3,9 +3,11 @@ import { fetchAPI } from "../api.mjs";
 import { MdOutlineCancel } from "react-icons/md";
 import ErrorAlert from "../common/ErrorAlert";
 import { useAuthenticate } from "../authentication/useAuthenticate";
+import { useNavigate } from "react-router";
 import SuccessAlert from "../common/SuccessAlert";
 function TrainerSessionPage() {
   const [sessions, setSessions] = useState([]);
+  const navigate = useNavigate();
   const [error, setError] = useState(null);
   const { user } = useAuthenticate();
   const [loading, setLoading] = useState(null);
@@ -44,9 +46,33 @@ function TrainerSessionPage() {
   useEffect(() => {
     if (user?.id) {
       getSessions();
+    } else {
+      navigate("/status");
     }
   }, [getSessions, user?.id]);
 
+  const handleDelete = async (sessionId) => {
+    setLoading(true);
+    setError(null);
+    const request = fetchAPI("DELETE", `/session/${sessionId}`, null, authKey);
+
+    request
+      .then((response) => {
+        setLoading(false);
+        if (response.status == 200) {
+          setSuccess("Successfully Deleted");
+          setSessions((prev) =>
+            prev.filter((session) => session.id !== sessionId)
+          );
+        } else {
+          setError(response.body.message);
+        }
+      })
+      .catch((error) => {
+        setError(error);
+        setLoading(false);
+      });
+  };
   return (
     <section className="flex flex-col items-center">
       {error && <span className="p-4 text-error">{error}</span>}
@@ -55,7 +81,7 @@ function TrainerSessionPage() {
           <span className="loading loading-spinner loading-xl my-8"></span>
         )
       ) : (
-        <ul className="list bg-base-100 rounded-box shadow-md w-96">
+        <ul className="list bg-base-100 rounded-box shadow-md w-full max-w-md mx-auto">
           <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">
             Your Sessions
           </li>
@@ -80,16 +106,16 @@ function TrainerSessionPage() {
                   Location: {session.location.location_name}
                 </div>
               </div>
-              {/* <button
+              <button
                 className="btn btn-square btn-primary"
-                // onClick={() => handleDelete(booking.id)}
+                onClick={() => handleDelete(session.id)}
               >
                 {loading ? (
                   <span className="loading loading-spinner"></span>
                 ) : (
                   <MdOutlineCancel />
                 )}
-              </button> */}
+              </button>
             </li>
           ))}
         </ul>

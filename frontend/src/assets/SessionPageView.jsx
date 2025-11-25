@@ -86,7 +86,7 @@ function SessionPageView() {
         <ul className="list bg-base-100 self-stretch flex items-center justify-center">
           {Object.entries(sessionsByDay).map(([day, sessions]) => (
             <Fragment key={day}>
-              <ul className="list bg-base-100 rounded-box shadow-md w-96 my-4">
+              <ul className="list bg-base-100 rounded-box shadow-md w-full max-w-md mx-auto my-4">
                 <li className="p-4 pb-2 text-s opacity-60 tracking-wide font-bold">
                   {day}
                 </li>

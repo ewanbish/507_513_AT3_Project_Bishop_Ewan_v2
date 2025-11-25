@@ -130,7 +130,7 @@ function BlogPage() {
       <ul className="list self-stretch">
         {user && (
           <li>
-            <div className="card w-96 bg-base-100 card-md shadow-sm mx-auto mb-[50px]">
+            <div className="card w-full max-w-md bg-base-100 card-md shadow-sm mx-auto mb-[50px]">
               <div className="card-body">
                 <input
                   className="card-title"
@@ -197,7 +197,7 @@ function BlogCard({
 }) {
   return (
     <li key={postId}>
-      <div className="card w-96 bg-base-100 card-md shadow-sm mx-auto mb-[50px]">
+      <div className="card w-full max-w-md bg-base-100 card-md shadow-sm mx-auto mb-[50px]">
         <div className="card-body">
           <h2 className="card-title">{title}</h2>
           <p>

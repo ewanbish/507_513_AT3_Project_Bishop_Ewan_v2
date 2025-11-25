@@ -77,7 +77,7 @@ function BookingsPage() {
           <span className="loading loading-spinner loading-xl my-8"></span>
         )
       ) : (
-        <ul className="list bg-base-100 rounded-box shadow-md w-96">
+        <ul className="list bg-base-100 rounded-box shadow-md w-full max-w-md mx-auto">
           <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">
             Your Bookings
           </li>

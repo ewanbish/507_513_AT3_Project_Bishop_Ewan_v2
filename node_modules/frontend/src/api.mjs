@@ -28,6 +28,12 @@ export async function fetchAPI(method, route, body, authKey) {
     const status = response.status;
     const responseBody = await response.json();
 
+    if (status == 403 && window.location.pathname !== "/status") {
+      window.location.href = "/status";
+    }
+    if (status == 401 && window.location.pathname !== "/status") {
+      window.location.href = "/status";
+    }
     return {
       status,
       body: responseBody,

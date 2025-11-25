@@ -12,9 +12,8 @@ function LoginView() {
   const [lastName, setLastName] = useState("");
   const [waiting, setWaiting] = useState(false);
   const [error, setError] = useState(null);
-  const { login, status, user } = useAuthenticate();
+  const { login, authenticate, status, user } = useAuthenticate();
   const navigate = useNavigate();
-
   const toggleMode = () => setIsRegistering((prev) => !prev);
 
   useEffect(() => {
@@ -24,49 +23,6 @@ function LoginView() {
       setError(status);
     }
   }, [status, navigate]);
-
-  const authenticate = useCallback(() => {
-    try {
-      setWaiting(true);
-      //TODO: Add more validation
-      setError(null);
-      if (!password || !email) {
-        setError("Please fill in all fields");
-        return;
-      }
-
-      if (isRegistering === true) {
-        if (!firstName || !lastName) {
-          setError("Please fill in all fields");
-          setWaiting(false);
-          return;
-        }
-        const body = JSON.stringify({
-          id: null,
-          email: email,
-          password: password,
-          firstName: firstName,
-          lastName: lastName,
-          role: "member",
-        });
-        const request = fetchAPI("POST", `authenticate/register/`, body);
-
-        request.then((response) => {
-          if (response.status == 200) {
-            console.log(response);
-            console.log("Success");
-            navigate("/blog");
-          } else {
-            setError(response.body.message);
-            setWaiting(false);
-          }
-        });
-      }
-    } catch (error) {
-      setWaiting(false);
-      console.error(error);
-    }
-  }, [setError, error, password, email, firstName, lastName, isRegistering]);
 
   return (
     <section className="flex justify-center">
@@ -114,7 +70,7 @@ function LoginView() {
           className="btn btn-primary mt-4"
           onClick={() => {
             if (isRegistering) {
-              authenticate();
+              authenticate(email, password, firstName, lastName);
             } else {
               login(email, password);
             }

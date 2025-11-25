@@ -5,6 +5,7 @@ import { DatabaseModel } from "../../models/DatabaseModel.mjs";
 import { UserModel } from "../../models/UserModel.mjs";
 import { LocationModel } from "../../models/LocationsModel.mjs";
 import { ActivitiesModel } from "../../models/ActivitiesModel.mjs";
+import { BookingModel } from "../../models/BookingModel.mjs";
 export class APISessionController {
   static routes = express.Router();
 
@@ -15,7 +16,11 @@ export class APISessionController {
       this.getSessionsOfWeek
     );
     this.routes.get("/xml/:id", this.getSessionsXML);
-    this.routes.get("/:id", this.getSessionByUserId);
+    this.routes.get(
+      "/:id",
+      APIAuthenticationController.restrict("trainer"),
+      this.getSessionByUserId
+    );
     this.routes.delete(
       "/:id",
       APIAuthenticationController.restrict("trainer"),
@@ -132,19 +137,24 @@ export class APISessionController {
   }
   static async deleteSession(req, res) {
     try {
-      const result = await SessionModel.delete(req.params.id);
-      if (result.affectedRows == 1) {
-        res.status(200).json({
-          message: "Session Deleted",
-        });
+      const result = await BookingModel.getAllOfSessionId(req.params.id);
+      const allBookings = Array.isArray(result) ? result : [];
+
+      await Promise.all(
+        allBookings.map((booking) => BookingModel.delete(booking.id))
+      );
+      const deleteResult = await SessionModel.delete(req.params.id);
+
+      if (deleteResult.affectedRows === 1) {
+        return res.status(200).json({ message: "Session Deleted" });
       } else {
-        res.status(404).json({
+        return res.status(404).json({
           message: "Not Found - The selected session could not be found",
         });
       }
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Database Error" });
+      console.error("Delete session error:", error);
+      return res.status(500).json({ message: "Database Error" });
     }
   }
 }

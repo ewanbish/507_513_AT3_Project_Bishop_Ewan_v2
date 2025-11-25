@@ -14,20 +14,18 @@
 
 ]>
 
-<sessions export-date="<%=date%>">
-  <% for (const session of sessions) {%>
+<sessions export-date="sample_date">
   <session>
-    <date><%=session.date%></date>
-    <activity-name><%= session.activity.activity_name%></activity-name>
-    <start-time><%=session.startTime%></start-time>
-    <end-time><%=session.endTime%></end-time>
+    <date>sample_date</date>
+    <activity-name>sample_activity</activity-name>
+    <start-time>sample_start</start-time>
+    <end-time>sample_end</end-time>
     <trainer>
       <name
-        ><%= session.trainer.firstName%> <%= session.trainer.lastName%></name
+        >John Doe</name
       >
-      <email><%= session.trainer.email%></email>
+      <email>jdoe@gmail.com</email>
     </trainer>
-    <location-name><%=session.location.location_name%></location-name>
+    <location-name>sample_location</location-name>
   </session>
-  <%}%>
 </sessions>

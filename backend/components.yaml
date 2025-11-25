@@ -74,6 +74,8 @@ paths:
     delete:
       summary: "Delete a specific booking from the database"
       tags: [Bookings]
+      security:
+        - ApiKeyAuth: []
       responses:
         "200":
           $ref: "#/components/responses/Deleted"
@@ -89,6 +91,8 @@ paths:
     get:
       summary: "Export a certain users bookings to XML"
       tags: [Bookings]
+      security:
+        - ApiKeyAuth: []
       parameters:
         - in: path
           name: id
@@ -137,8 +141,14 @@ paths:
                     location-name:
                       type: string
                       example: Chermside
-        default:
+        "404":
+          $ref: "#/components/responses/Not_Found"
+        "500":
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   /api/session:
     get:
       summary: "Get all sessions from the database"
@@ -284,10 +294,14 @@ paths:
       summary: "Get a User by id"
       tags: [Users]
       responses:
-        200:
+        "200":
           $ref: "#/components/responses/Retrieved"
-        500:
+        "500":
           $ref: "#/components/responses/Database_Error"
+        "401":
+          $ref: "#/components/responses/Not_Authenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
     put:
       summary: "Update an existing user"
       tags: [Users]
@@ -300,16 +314,18 @@ paths:
             schema:
               $ref: "#/components/schemas/User"
       responses:
-        200:
+        "200":
           $ref: "#/components/responses/Updated"
-        404:
+        "404":
           $ref: "#/components/responses/Not_Found"
-        500:
+        "500":
           $ref: "#/components/responses/Database_Error"
         "401":
           $ref: "#/components/responses/Not_Authenticated"
         "403":
           $ref: "#/components/responses/Forbidden"
+        400:
+          $ref: "#/components/responses/Invalid_Credentials"
     patch:
       summary: "Partially update an existing user"
       tags: [Users]
@@ -321,17 +337,23 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                newPassword:
+                  type: string
+                  example: "Password1*"
       responses:
-        200:
+        "200":
           $ref: "#/components/responses/Updated"
-        404:
+        "404":
           $ref: "#/components/responses/Not_Found"
-        500:
+        "500":
           $ref: "#/components/responses/Database_Error"
         "401":
           $ref: "#/components/responses/Not_Authenticated"
         "403":
           $ref: "#/components/responses/Forbidden"
+        400:
+          $ref: "#/components/responses/Invalid_Credentials"
 
   /api/authenticate:
     post:
@@ -375,11 +397,22 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/Authenticated"
+  /api/authenticate/resume:
+    get:
+      summary: "Retrieve the user using auth-key"
+      tags: [Authentication]
+      responses:
+        "200":
+          $ref: "#/components/responses/Retrieved"
+        "500":
+          $ref: "#/components/responses/Not_Authenticated"
 
   /api/session/xml/{id}:
     get:
       summary: "Export a certain trainers sessions to XML"
       tags: [Sessions]
+      security:
+        - ApiKeyAuth: []
       parameters:
         - in: path
           name: id
@@ -387,7 +420,7 @@ paths:
           schema:
             type: integer
       responses:
-        200:
+        "200":
           description: "Complete sessions XML"
           content:
             text/xml:
@@ -425,7 +458,9 @@ paths:
                     location-name:
                       type: string
                       example: Chermside
-        default:
+        "404":
+          $ref: "#/components/responses/Not_Found"
+        "500":
           $ref: "#/components/responses/Database_Error"
 components:
   schemas:
@@ -494,6 +529,9 @@ components:
           type: string
           example: "trainer"
           enum: [member, trainer, admin]
+        authenticationKey:
+          type: string
+          example: "[Insert key here]"
     Blog:
       type: object
       required: [id, postContent, postTitle]

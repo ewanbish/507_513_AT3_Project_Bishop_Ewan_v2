@@ -13,21 +13,18 @@
 
 ]>
 
-<bookings export-date="<%=date%>">
-  <% for (const booking of bookings) {%>
+<bookings export-date="sample_date">
   <booking>
-    <date><%=booking.session.date%></date>
-    <activity-name><%= booking.session.activity.activity_name%></activity-name>
-    <start-time><%=booking.session.startTime%></start-time>
-    <end-time><%=booking.session.endTime%></end-time>
+    <date>sample_date</date>
+    <activity-name>sample_activity</activity-name>
+    <start-time>sample_start</start-time>
+    <end-time>sample_end</end-time>
     <trainer>
       <name>
-        <%= booking.session.trainer.firstName%>
-        <%=booking.session.trainer.lastName%>
+       John Doe
       </name>
-      <email><%= booking.session.trainer.email%></email>
+      <email>jdoe@gmail.com</email>
     </trainer>
-    <location-name><%=booking.session.location.location_name%></location-name>
+    <location-name>sample_location</location-name>
   </booking>
-  <%}%>
 </bookings>

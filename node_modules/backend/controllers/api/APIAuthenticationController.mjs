@@ -37,21 +37,13 @@ export class APIAuthenticationController {
         );
       } catch (error) {
         console.log("Not working");
-        if (error == "not found") {
-          res.status(404).json({ message: "Key not found" });
-        } else {
-          console.error(error);
-          res.status(500).json({
-            message: "Failed to authenticate - Database error",
-          });
-        }
-        return;
       }
     }
     next();
   }
 
   static async handleResume(req, res) {
+    console.log("yooo");
     const authenticationKey = req.headers["x-auth-key"];
     try {
       const result = await UserModel.getByAuthenticationKey(authenticationKey);
@@ -136,6 +128,7 @@ export class APIAuthenticationController {
       res.status(200).json({
         message: "Successfully authenticated",
         key: user.authenticationKey,
+        user: user,
       });
     } catch (error) {
       switch (error) {

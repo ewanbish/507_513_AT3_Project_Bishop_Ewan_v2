@@ -2,18 +2,18 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchAPI } from "../api.mjs";
 import ErrorAlert from "../common/ErrorAlert";
 import { useAuthenticate } from "../authentication/useAuthenticate";
+import { useNavigate } from "react-router";
 function UserPage() {
   // User details:
-  const { user } = useAuthenticate();
+  const { user, status, logout } = useAuthenticate();
   const [selectedUser, setSelectedUser] = useState({});
   const [newUser, setNewUser] = useState({});
   const [newPassword, setNewPassword] = useState();
-  const [matchPassword, setMatchPassword] = useState();
-
   // Errors
   const [error, setError] = useState();
   const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(null);
+  const navigate = useNavigate();
   const authKey = localStorage.getItem("auth-key");
   const getUser = useCallback(() => {
     console.log(user);
@@ -41,18 +41,33 @@ function UserPage() {
     getUser();
   }, [getUser]);
 
+  const handleLogout = () => {
+    logout();
+  };
+  useEffect(() => {
+    if (status === "removed") {
+      navigate("/");
+    }
+  }, [status, navigate]);
   const handleSave = async () => {
     setLoading(true);
     setError(null);
+    console.log("right here");
     console.log(newUser);
+
     try {
-      fetchAPI("PUT", `/user/${user.id}`, newUser).then((response) => {
+      fetchAPI("PUT", `/user/${user.id}`, newUser, authKey).then((response) => {
         if (response.status == 200) {
           getUser();
           setLoading(false);
         } else {
-          setError("An error has occured");
-          setLoading(false);
+          if (response.status == 400) {
+            setLoading(false);
+            setError(response.body.message);
+          } else {
+            setError("An error has occured");
+            setLoading(false);
+          }
         }
       });
     } catch (error) {
@@ -63,20 +78,20 @@ function UserPage() {
   const handlePatch = async () => {
     setError(null);
     setLoading(true);
-    if (newPassword !== matchPassword) {
-      setError("Passwords do not match");
-      setLoading(false);
-      return;
-    }
     try {
-      fetchAPI("PATCH", `/user/${user.id}`, { newPassword }).then(
+      fetchAPI("PATCH", `/user/${user.id}`, { newPassword }, authKey).then(
         (response) => {
           if (response.status == 200) {
             getUser();
             setLoading(false);
           } else {
-            setError("An error has occured");
-            setLoading(false);
+            if (response.status == 400) {
+              setLoading(false);
+              setError(response.body.message);
+            } else {
+              setError("An error has occured");
+              setLoading(false);
+            }
           }
         }
       );
@@ -85,7 +100,7 @@ function UserPage() {
       setLoading(false);
     }
   };
-  if (!user) {
+  if (!selectedUser) {
     return (
       <section className="flex flex-col items-center justify-center">
         <span className="loading loading-spinner my-8"></span>
@@ -101,8 +116,8 @@ function UserPage() {
         <input
           type="email"
           className="input input-primary"
-          placeholder={user.email}
-          onChange={(e) => setNewUser({ ...user, email: e.target.value })}
+          placeholder={selectedUser.email}
+          onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
         />
         {validationErrors["email"] && (
           <label className="label text-red-500 justify-self-end">
@@ -113,8 +128,10 @@ function UserPage() {
         <input
           type="text"
           className="input input-primary"
-          placeholder={user.firstName}
-          onChange={(e) => setNewUser({ ...user, firstName: e.target.value })}
+          placeholder={selectedUser.firstName}
+          onChange={(e) =>
+            setNewUser({ ...newUser, firstName: e.target.value })
+          }
         />
         {validationErrors["firstName"] && (
           <label className="label text-red-500 justify-self-end">
@@ -124,8 +141,8 @@ function UserPage() {
         <input
           type="text"
           className="input input-primary"
-          placeholder={user.lastName}
-          onChange={(e) => setNewUser({ ...user, lastName: e.target.value })}
+          placeholder={selectedUser.lastName}
+          onChange={(e) => setNewUser({ ...newUser, lastName: e.target.value })}
         />
         {validationErrors["lastName"] && (
           <label className="label text-red-500 justify-self-end">
@@ -153,17 +170,6 @@ function UserPage() {
             Validation errors
           </label>
         )}
-        <input
-          type="password"
-          className="input input-primary"
-          placeholder="Confirm Password"
-          onChange={(e) => setMatchPassword(e.target.value)}
-        />
-        {validationErrors["matchPassword"] && (
-          <label className="label text-red-500 justify-self-end">
-            Validation errors
-          </label>
-        )}
         <button className="btn btn-neutral mt-4" onClick={handlePatch}>
           {loading ? (
             <span className="loading loading-spinner"></span>
@@ -172,6 +178,9 @@ function UserPage() {
           )}
         </button>
       </fieldset>
+      <button className="btn btn-ghost mt-4" onClick={handleLogout}>
+        Logout
+      </button>
       <ErrorAlert error={error} onClear={() => setError(null)} />
     </section>
   );

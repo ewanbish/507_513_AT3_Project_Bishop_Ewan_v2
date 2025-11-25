@@ -120,7 +120,9 @@ export class UserModel extends DatabaseModel {
    * @throws {Error} If the database update fails.
    */
   static async update(user) {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const hashedPassword = user.password.startsWith("$2b$")
+      ? user.password // Already hashed, don't hash again
+      : await bcrypt.hash(user.password, 10); // Plain text, hash it
     return this.query(
       `
       UPDATE users
@@ -147,7 +149,9 @@ export class UserModel extends DatabaseModel {
    * @throws {Error} If the database insert fails.
    */
   static async create(user) {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const hashedPassword = user.password.startsWith("$2b$")
+      ? user.password // Already hashed, don't hash again
+      : await bcrypt.hash(user.password, 10); // Plain text, hash it
 
     return this.query(
       `INSERT INTO users (userID, firstName, lastName, email, password, role, authentication_key)
@@ -186,14 +190,14 @@ export class UserModel extends DatabaseModel {
 // TESTING AREA
 
 // const user = new UserModel(
-//   null,
-//   "Super",
-//   "Man",
-//   "clarkk@gmail.com",
-//   "batman_sucks",
-//   "member"
+//   5,
+//   "Ewan",
+//   "Bishop",
+//   "ewanb@gmail.com",
+//   "Password1*",
+//   "trainer"
 // );
-// UserModel.create(user).then((result) => {
+// UserModel.update(user).then((result) => {
 //   console.log(result);
 //   console.log(user);
 // });
