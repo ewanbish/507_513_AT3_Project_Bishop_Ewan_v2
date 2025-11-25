@@ -30,7 +30,63 @@ export class APISessionController {
 
   /**
    * @type {express.RequestHandler}
-   *
+   * /api/session/xml/{id}:
+   *   get:
+   *     summary: "Export a certain trainers sessions to XML"
+   *     tags: [Sessions]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       "200":
+   *         description: "Complete sessions XML"
+   *         content:
+   *           text/xml:
+   *             schema:
+   *               type: array
+   *               xml:
+   *                 name: sessions
+   *               items:
+   *                 type: object
+   *                 properties:
+   *                   date:
+   *                     type: string
+   *                     format: date
+   *                   start-time:
+   *                     type: string
+   *                     format: time
+   *                   end-time:
+   *                     type: string
+   *                     format: time
+   *                   trainer:
+   *                     type: object
+   *                     properties:
+   *                       email:
+   *                         type: string
+   *                         example: jane@doe.mail
+   *                       first-name:
+   *                         type: string
+   *                         example: Jane
+   *                       last-name:
+   *                         type: string
+   *                         example: Doe
+   *                   activity-name:
+   *                     type: string
+   *                     example: Pilates
+   *                   location-name:
+   *                     type: string
+   *                     example: Chermside
+   *       "404":
+   *         $ref: "#/components/responses/Not_Found"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
    *
    */
   static async getSessionsXML(req, res) {
@@ -72,6 +128,43 @@ export class APISessionController {
       });
     }
   }
+
+  /**
+   *
+   * @openapi
+   * /api/session:
+   *   get:
+   *     summary: "Get all sessions from the database"
+   *     tags: [Sessions]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - in: query
+   *         name: start_date
+   *         schema:
+   *           type: string
+   *           format: date
+   *         required: false
+   *         description: "Start date filter (YYYY-MM-DD)"
+   *       - in: query
+   *         name: end_date
+   *         schema:
+   *           type: string
+   *           format: date
+   *         required: false
+   *         description: "End date filter (YYYY-MM-DD)"
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Retrieved_Array"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async getSessionsOfWeek(req, res) {
     try {
       const sessions = await SessionModel.getByStartAndEndDate(
@@ -112,6 +205,36 @@ export class APISessionController {
       res.status(500).json({ message: "Database Error" });
     }
   }
+
+  /**
+   *
+   * @openapi
+   * /api/session/{id}:
+   *   get:
+   *     summary: "Get sessions by a user's id"
+   *     tags: [Sessions]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Retrieved_Array"
+   *       "404":
+   *         $ref: "#/components/responses/Not_Found"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async getSessionByUserId(req, res) {
     try {
       const sessions = await SessionModel.getByUserId(req.params.id);
@@ -135,6 +258,35 @@ export class APISessionController {
       res.status(500).json({ message: "Database Error" });
     }
   }
+  /**
+   *
+   * @openapi
+   * /api/session/{id}:
+   *   delete:
+   *     summary: "Delete a specific Session from the database"
+   *     tags: [Sessions]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         $ref: "#/components/responses/Deleted"
+   *       404:
+   *         $ref: "#/components/responses/Not_Found"
+   *       500:
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async deleteSession(req, res) {
     try {
       const result = await BookingModel.getAllOfSessionId(req.params.id);

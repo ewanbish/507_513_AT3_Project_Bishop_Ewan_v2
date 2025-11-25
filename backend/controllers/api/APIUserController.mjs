@@ -23,6 +23,34 @@ export class APIUserController {
     );
   }
 
+  /**
+   *
+   * @openapi
+   * /api/user/{id}:
+   *   get:
+   *     summary: "Get a User by id"
+   *     tags: [Users]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Retrieved"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   *
+   */
   static async getUserById(req, res) {
     try {
       const user = await UserModel.getById(req.params.id);
@@ -32,10 +60,48 @@ export class APIUserController {
       res.status(500).json({ message: "Database Error" });
     }
   }
+
+  /**
+   *
+   * @openapi
+   * /api/user/{id}:
+   *   put:
+   *     summary: "Update an existing user"
+   *     tags: [Users]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: "#/components/schemas/User"
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Updated"
+   *       "404":
+   *         $ref: "#/components/responses/Not_Found"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       400:
+   *         $ref: "#/components/responses/Invalid_Credentials"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async updateUser(req, res) {
     try {
       const user = new UserModel(
-        req.body.id,
+        req.params.id,
         ValidationController.validateName(req.body.firstName),
         ValidationController.validateName(req.body.lastName),
         ValidationController.validateEmail(req.body.email),
@@ -65,6 +131,48 @@ export class APIUserController {
       }
     }
   }
+
+  /**
+   *
+   * @openapi
+   * /api/user/{id}:
+   *   patch:
+   *     summary: "Partially update an existing user"
+   *     tags: [Users]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               newPassword:
+   *                 type: string
+   *                 example: "Password1*"
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Updated"
+   *       "404":
+   *         $ref: "#/components/responses/Not_Found"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       400:
+   *         $ref: "#/components/responses/Invalid_Credentials"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async patchUser(req, res) {
     try {
       console.log("Endpoint reached");

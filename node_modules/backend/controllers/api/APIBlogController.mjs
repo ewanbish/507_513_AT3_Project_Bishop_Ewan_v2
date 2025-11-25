@@ -19,12 +19,38 @@ export class APIBlogController {
     );
   }
 
+  /**
+   *
+   * @openapi
+   * /api/blog:
+   *   post:
+   *     summary: "Create a new Blog Post"
+   *     tags: [Blog]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: "#/components/schemas/Blog"
+   *     responses:
+   *       200:
+   *         $ref: "#/components/responses/Created"
+   *       500:
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async createBlog(req, res) {
     try {
       const post = new BlogModel(
         null,
         req.body.id,
-        //user id,
         req.body.postContent,
         req.body.postTitle
       );
@@ -44,6 +70,30 @@ export class APIBlogController {
       });
     }
   }
+
+  /**
+   *
+   * @openapi
+   * /api/blog:
+   *   get:
+   *     summary: "Get all Blog Posts from database"
+   *     tags: [Blog]
+   *     parameters:
+   *       - name: filter
+   *         in: query
+   *         description: Search filter on Blog titles, content and authors.
+   *         required: false
+   *         schema:
+   *           type: string
+   *           example: "Push"
+   *     responses:
+   *       200:
+   *         $ref: "#/components/responses/Retrieved"
+   *       500:
+   *         $ref: "#/components/responses/Database_Error"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async getBlogPosts(req, res) {
     try {
       const posts = await BlogModel.getAll();
@@ -74,6 +124,35 @@ export class APIBlogController {
       res.status(500).json({ message: "Database Error" });
     }
   }
+  /**
+   *
+   * @openapi
+   * /api/blog/{id}:
+   *   delete:
+   *     summary: "Delete a specific Blog Post from the database"
+   *     tags: [Blog]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         $ref: "#/components/responses/Deleted"
+   *       500:
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       "404":
+   *         $ref: "#/components/responses/Not_Found"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async deleteBlog(req, res) {
     try {
       const result = await BlogModel.delete(req.params.id);

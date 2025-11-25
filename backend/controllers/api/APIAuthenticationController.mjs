@@ -42,6 +42,21 @@ export class APIAuthenticationController {
     next();
   }
 
+  /**
+   *
+   * @openapi
+   * /api/authenticate/resume:
+   *   get:
+   *     summary: "Retrieve the user using auth-key"
+   *     tags: [Authentication]
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Retrieved"
+   *       "500":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async handleResume(req, res) {
     console.log("yooo");
     const authenticationKey = req.headers["x-auth-key"];
@@ -55,6 +70,40 @@ export class APIAuthenticationController {
   /**
    *
    * @type {express.RequestHandler}
+   * @openapi
+   * /api/authenticate:
+   *   post:
+   *     summary: "Send user credentials to server - to authenticate"
+   *     tags: [Authentication]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: "#/components/schemas/UserCredentials"
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Authenticated"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       "400":
+   *         $ref: "#/components/responses/Invalid_Credentials"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   *   delete:
+   *     summary: "Log out a user - Deauthenticate"
+   *     tags: [Authentication]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Deleted"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
    */
 
   static async handleAuthenticate(req, res) {
@@ -108,6 +157,25 @@ export class APIAuthenticationController {
     }
   }
 
+  /**
+   *
+   * @openapi
+   * /api/authenticate/register:
+   *   post:
+   *     summary: "Register a new user"
+   *     tags: [Authentication]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: "#/components/schemas/User"
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Authenticated"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async handleRegister(req, res) {
     console.log("Registering...");
     try {

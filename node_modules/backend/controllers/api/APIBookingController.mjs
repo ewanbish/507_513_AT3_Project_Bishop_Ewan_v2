@@ -37,6 +37,74 @@ export class APIBookingController {
     );
   }
 
+  /**
+   *
+   * @openapi
+   * /api/booking/xml/{id}:
+   *   get:
+   *     summary: "Export a certain users bookings to XML"
+   *     tags: [Bookings]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: "Complete bookings XML"
+   *         content:
+   *           text/xml:
+   *             schema:
+   *               type: array
+   *               xml:
+   *                 name: bookings
+   *               items:
+   *                 type: object
+   *                 properties:
+   *                   id:
+   *                     type: string
+   *                     example: 1
+   *                   date:
+   *                     type: string
+   *                     format: date
+   *                   start-time:
+   *                     type: string
+   *                     format: time
+   *                   end-time:
+   *                     type: string
+   *                     format: time
+   *                   trainer:
+   *                     type: object
+   *                     properties:
+   *                       email:
+   *                         type: string
+   *                         example: jane@doe.mail
+   *                       first-name:
+   *                         type: string
+   *                         example: Jane
+   *                       last-name:
+   *                         type: string
+   *                         example: Doe
+   *                   activity-name:
+   *                     type: string
+   *                     example: Pilates
+   *                   location-name:
+   *                     type: string
+   *                     example: Chermside
+   *       "404":
+   *         $ref: "#/components/responses/Not_Found"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async getBookingsXML(req, res) {
     try {
       const date = DatabaseModel.toMySqlDate(new Date());
@@ -85,7 +153,32 @@ export class APIBookingController {
    * @param {*} req
    * @param {*} res
    * @type {express.RequestHandler}
-   *
+   * @openapi
+   * /api/booking:
+   *   get:
+   *     summary: "Get all bookings from database"
+   *     tags: [Bookings]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - name: filter
+   *         in: query
+   *         description: Search filter on Blog titles, content and authors.
+   *         required: false
+   *         schema:
+   *           type: string
+   *           example: "Push"
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Retrieved_Array"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
    */
   static async getBookings(req, res) {
     try {
@@ -140,6 +233,36 @@ export class APIBookingController {
       res.status(500).json({ message: "Database Error" });
     }
   }
+
+  /**
+   *
+   * @openapi
+   * /api/booking/{id}:
+   *   get:
+   *     summary: "Get a users bookings from the database"
+   *     tags: [Bookings]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Retrieved_Array"
+   *       "404":
+   *         $ref: "#/components/responses/Not_Found"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async getBookingByUserId(req, res) {
     try {
       const allBookings = await BookingModel.getAllOfUserId(req.params.id);
@@ -175,6 +298,35 @@ export class APIBookingController {
       res.status(500).json({ message: "Database Error" });
     }
   }
+  /**
+   *
+   * @openapi
+   * /api/booking/{id}:
+   *   delete:
+   *     summary: "Delete a specific booking from the database"
+   *     tags: [Bookings]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Deleted"
+   *       "404":
+   *         $ref: "#/components/responses/Not_Found"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async deleteBooking(req, res) {
     try {
       const result = await BookingModel.delete(req.params.id);
@@ -192,6 +344,44 @@ export class APIBookingController {
       res.status(500).json({ message: "Database Error" });
     }
   }
+  /**
+   *
+   * @openapi
+   * /api/booking:
+   *   post:
+   *     summary: "Create a new booking"
+   *     tags: [Bookings]
+   *     security:
+   *       - ApiKeyAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: "#/components/schemas/Booking"
+   *     responses:
+   *       "200":
+   *         $ref: "#/components/responses/Created"
+   *       400:
+   *         description: "The resource already exists"
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               required: [message]
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: "Resource Updated"
+   *       "500":
+   *         $ref: "#/components/responses/Database_Error"
+   *       "401":
+   *         $ref: "#/components/responses/Not_Authenticated"
+   *       "403":
+   *         $ref: "#/components/responses/Forbidden"
+   *       default:
+   *         $ref: "#/components/responses/Database_Error"
+   */
   static async createBooking(req, res) {
     try {
       const booking = new BookingModel(

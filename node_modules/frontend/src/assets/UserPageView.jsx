@@ -181,6 +181,7 @@ function UserPage() {
       <button className="btn btn-ghost mt-4" onClick={handleLogout}>
         Logout
       </button>
+      <a className="link hover:link-primary text-xs mt-28">Privacy Policy</a>
       <ErrorAlert error={error} onClear={() => setError(null)} />
     </section>
   );

@@ -69,6 +69,7 @@ export class BlogModel extends DatabaseModel {
    * @throws {Error} If the database query fails.
    */
   static async create(post) {
+    console.log(post);
     return this.query(
       `INSERT INTO blog_posts (postId, userId, postContent, postTitle)
     VALUES (?, ?, ?, ?)`,
