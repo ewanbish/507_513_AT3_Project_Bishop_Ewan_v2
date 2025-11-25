@@ -52,6 +52,23 @@ export class ActivitiesModel extends DatabaseModel {
       )
       .catch((error) => console.error(error));
   }
+
+  /**
+   * This function retrieves a specific activity from the database by its ID.
+   *
+   * @param {string|number} id - The ID of the activity to retrieve.
+   * @returns {Promise<ActivitiesModel>} - A promise that resolves to an ActivitiesModel instance.
+   * @throws {Error} - Throws an error if the activity is not found or the database query fails.
+   */
+  static getByIdForXML(id) {
+    return this.query("SELECT * FROM activities WHERE activity_id = ?", [id])
+      .then((result) =>
+        result.length > 0
+          ? this.tableToModel(result[0].activities)
+          : Promise.reject("Activity not found")
+      )
+      .catch((error) => console.error(error));
+  }
   /**
    * This function will create a new activity in the database.
    *

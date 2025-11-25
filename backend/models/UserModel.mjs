@@ -66,7 +66,27 @@ export class UserModel extends DatabaseModel {
           ? this.tableToModel(result[0].users)
           : Promise.reject("user not found")
       )
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
+  }
+  /**
+   * Retrieves a single active user from the users table by its ID.
+   * @param {number|string} id The unique identifier of the user to fetch.
+   * @returns {Promise<UserModel>} A promise that resolves to a UserModel instance if found, or rejects with "user not found" if no matching row exists.
+   */
+  static getByIdForXML(id) {
+    return this.query("SELECT * FROM users WHERE userId = ?", [id])
+      .then((result) =>
+        result.length > 0
+          ? this.tableToModel(result[0].users)
+          : Promise.reject("user not found")
+      )
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
   }
 
   static getByAuthenticationKey(authenticationKey) {
@@ -100,7 +120,9 @@ export class UserModel extends DatabaseModel {
    * @throws {Error} If the database update fails.
    */
   static async update(user) {
-    // const hashedPassword = await bcrypt.hash(user.password, 10);
+    const hashedPassword = user.password.startsWith("$2b$")
+      ? user.password // Already hashed, don't hash again
+      : await bcrypt.hash(user.password, 10); // Plain text, hash it
     return this.query(
       `
       UPDATE users
@@ -110,7 +132,7 @@ export class UserModel extends DatabaseModel {
         user.firstName,
         user.lastName,
         user.email,
-        user.password,
+        hashedPassword,
         user.role,
         user.authenticationKey,
         user.id,
@@ -127,11 +149,13 @@ export class UserModel extends DatabaseModel {
    * @throws {Error} If the database insert fails.
    */
   static async create(user) {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const hashedPassword = user.password.startsWith("$2b$")
+      ? user.password // Already hashed, don't hash again
+      : await bcrypt.hash(user.password, 10); // Plain text, hash it
 
     return this.query(
       `INSERT INTO users (userID, firstName, lastName, email, password, role, authentication_key)
-    VALUES (?, ?, ?, ?, ?, ?)`,
+    VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         user.id,
         user.firstName,
@@ -156,21 +180,24 @@ export class UserModel extends DatabaseModel {
       .then((result) =>
         result.affectedRows > 0 ? result : Promise.reject("user not found")
       )
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
   }
 }
 
 // TESTING AREA
 
 // const user = new UserModel(
-//   null,
-//   "Super",
-//   "Man",
-//   "clarkk@gmail.com",
-//   "batman_sucks",
-//   "member"
+//   5,
+//   "Ewan",
+//   "Bishop",
+//   "ewanb@gmail.com",
+//   "Password1*",
+//   "trainer"
 // );
-// UserModel.create(user).then((result) => {
+// UserModel.update(user).then((result) => {
 //   console.log(result);
 //   console.log(user);
 // });

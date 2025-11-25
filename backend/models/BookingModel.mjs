@@ -106,12 +106,16 @@ export class BookingModel extends DatabaseModel {
   static delete(id) {
     return this.query("UPDATE bookings set deleted = 1 WHERE bookingId = ?", [
       id,
-    ])
-      .then((result) =>
-        result.affectedRows > 0 ? result : Promise.reject("booking not found")
-      )
-      .catch((error) => console.error(error));
+    ]).then((result) => {
+      console.log(result);
+      if (result.affectedRows > 0) {
+        return result;
+      } else {
+        throw new Error("booking not found");
+      }
+    });
   }
+
   /**
    * Updates the sessionId of a booking in the bookings table by its bookingId.
    * @param {number|string} sessionId The new session ID to assign to the booking.
@@ -130,5 +134,14 @@ export class BookingModel extends DatabaseModel {
       console.error(error);
       throw error;
     });
+  }
+  static getBookingsXML(id) {
+    return this.query("SELECT * FROM bookings WHERE UserId = ?", [id])
+      .then((results) => {
+        console.log("results: ");
+        console.log(results);
+        return results.map((row) => this.tableToModel(row.bookings));
+      })
+      .catch((error) => console.error(error));
   }
 }

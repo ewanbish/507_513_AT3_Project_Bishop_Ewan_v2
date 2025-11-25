@@ -36,15 +36,17 @@ export class APIController {
   static {
     /**
      * @openapi
-     *  /api/docs:
+     * /api/docs:
      *      get:
-     *          summary: "View automatically generated documentation pages"
+     *          summary: "View automatically generated API documentation"
      *          tags: [Documentation]
      *          responses:
-     *            200:
-     *               description: "The documentation page"
+     *            '200':
+     *              description: 'Swagger documentation page'
      */
     this.routes.use("/docs", swaggerUI.serve, swaggerUI.setup(specification));
+
+    // Validator - just use the basic config
     this.routes.use(
       ApiValidator.middleware({
         apiSpec: specification,
@@ -52,14 +54,15 @@ export class APIController {
         validateResponses: true,
       })
     );
+
     this.routes.use((error, req, res, next) => {
       res
         .status(error.status || 500)
         .json({ message: error.message, errors: error.errors });
     });
+
     this.routes.use(APIAuthenticationController.middleware);
     this.routes.use(APIAuthenticationController.routes);
-
     this.routes.use("/user", APIUserController.routes);
     this.routes.use("/blog", APIBlogController.routes);
     this.routes.use("/booking", APIBookingController.routes);
